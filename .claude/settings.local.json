@@ -1,5 +1,9 @@
 {
   "permissions": {
-    "allow": []
+    "allow": [
+      "mcp__ElevenLabs__*",
+      "mcp__n8n-mcp__*",
+      "mcp__n8n-instance__*"
+    ]
   }
 }
