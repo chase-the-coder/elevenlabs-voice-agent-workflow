@@ -14,27 +14,46 @@ An opinionated workflow for building and managing ElevenLabs conversational AI a
 
 - [Node.js](https://nodejs.org/) v18+
 - [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) installed and configured
+- [GitHub CLI](https://cli.github.com/) (`gh`) installed and authenticated
 - An [ElevenLabs](https://elevenlabs.io) account with API access
 - Git
 
 ## Quick Start
 
-### 1. Clone and install
+### 1. Clone the template
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/elevenlabs-voice-agent-workflow.git
-cd elevenlabs-voice-agent-workflow/elevenlabs-manager
+cd elevenlabs-voice-agent-workflow
+```
+
+### 2. Make it your own
+
+Remove the template's origin and create your own repository:
+
+```bash
+git remote remove origin
+gh repo create my-voice-agents --private --source=. --remote=origin --push
+```
+
+This detaches from the original template and pushes to a new repo under your GitHub account. Use `--public` instead of `--private` if you prefer.
+
+### 3. Install dependencies
+
+```bash
+cd elevenlabs-manager
 npm install
 ```
 
-### 2. Configure your API key
+### 4. Configure your API key
 
 ```bash
 cp .env.example .env
-# Edit .env and add your ElevenLabs API key
 ```
 
-### 3. Discover your agents
+Edit `.env` and add your ElevenLabs API key (get one at [elevenlabs.io/app/settings/api-keys](https://elevenlabs.io/app/settings/api-keys)).
+
+### 5. Discover your agents
 
 ```bash
 npm run discover
@@ -42,14 +61,14 @@ npm run discover
 
 This fetches your ElevenLabs agents and helps you map them to local folders. You can also manually edit `config.json`.
 
-### 4. Start Claude Code
+### 6. Start Claude Code
 
 ```bash
 cd ..  # back to project root
 claude
 ```
 
-Claude Code will automatically read CLAUDE.md and understand the project conventions.
+Claude Code will automatically read CLAUDE.md and understand the project conventions. Run `/prime` to get oriented.
 
 ## The Workflow
 
