@@ -270,6 +270,35 @@ my-agent/
     └── results/                       # Test output (git-ignored)
 ```
 
+## What Claude Can Do in This Project
+
+When you open Claude Code in this repo, it automatically reads `CLAUDE.md` and the files in `.claude/` (commands and skills). These teach Claude how to manage your ElevenLabs agents. Here's what Claude gains the ability to do:
+
+### Read and write local files
+- Create and edit agent prompts, knowledge bases, tool definitions, and configs
+- Generate test scenarios and manual test guides
+- Save plans to `specs/todo/` and move completed plans to `specs/done/`
+
+### Run CLI commands that interact with the ElevenLabs API
+Using your API key (from `elevenlabs-manager/.env`), Claude can run bash commands to:
+- **Push agent changes** to ElevenLabs (prompts, configs, tools, knowledge bases)
+- **Pull agent configs** from ElevenLabs to sync locally
+- **Create and manage branches** on ElevenLabs for A/B testing
+- **Deploy traffic splits** between branches
+- **Merge branches** to Main (production)
+- **Run test simulations** against your live agent via the ElevenLabs API
+
+### What Claude will NOT do without asking
+The workflow is designed with guardrails — Claude will always ask for your confirmation before:
+- **Pushing to ElevenLabs** — `/build` always asks whether to push to Main or a new branch
+- **Merging branches** — you control when changes go to production
+- **Deploying traffic** — you set the percentage split
+
+Claude Code also has its own permission system. The first time Claude tries to run a bash command (like `npm run agents:push`), Claude Code will prompt you to approve it. You can allow it once, for the session, or always.
+
+### Why this matters
+If you're new to Claude Code: this project gives Claude a lot of context about ElevenLabs best practices and your agent architecture. It doesn't give Claude any access beyond what the CLI tool already provides — Claude is just running the same `npm run` commands you would run manually, but it knows when and how to use them because of the instructions in CLAUDE.md and the slash commands.
+
 ## Key Conventions
 
 These are enforced by CLAUDE.md and the review command:
