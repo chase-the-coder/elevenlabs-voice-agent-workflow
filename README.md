@@ -288,13 +288,26 @@ Using your API key (from `elevenlabs-manager/.env`), Claude can run bash command
 - **Merge branches** to Main (production)
 - **Run test simulations** against your live agent via the ElevenLabs API
 
+### Pre-approved permissions
+This project ships with all permissions pre-approved in `.claude/settings.local.json` so the workflow runs smoothly without constant "approve?" prompts. Out of the box, Claude can:
+- Run all `npm run` commands (the elevenlabs-manager CLI)
+- Run `git` commands (branching, committing, diffing)
+- Run `npx` commands (MCP servers, build tools)
+- Use all ElevenLabs, n8n, and n8n-instance MCP tools
+- Perform basic file operations (`mkdir`, `ls`, `mv`, `cp`)
+
+If you prefer to manually approve each action, ask Claude to clear the permissions:
+```
+Clear all pre-approved permissions in .claude/settings.local.json
+```
+
 ### What Claude will NOT do without asking
-The workflow is designed with guardrails — Claude will always ask for your confirmation before:
+Even with permissions pre-approved, the workflow itself has guardrails — Claude will always ask for your confirmation before:
 - **Pushing to ElevenLabs** — `/build` always asks whether to push to Main or a new branch
 - **Merging branches** — you control when changes go to production
 - **Deploying traffic** — you set the percentage split
 
-Claude Code also has its own permission system. The first time Claude tries to run a bash command (like `npm run agents:push`), Claude Code will prompt you to approve it. You can allow it once, for the session, or always.
+These guardrails are in the slash command logic, not the permission system, so they apply regardless of your permission settings.
 
 ### Why this matters
 If you're new to Claude Code: this project gives Claude a lot of context about ElevenLabs best practices and your agent architecture. It doesn't give Claude any access beyond what the CLI tool already provides — Claude is just running the same `npm run` commands you would run manually, but it knows when and how to use them because of the instructions in CLAUDE.md and the slash commands.
