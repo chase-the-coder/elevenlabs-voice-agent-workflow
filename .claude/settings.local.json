@@ -1,6 +1,16 @@
 {
   "permissions": {
     "allow": [
+      "Bash(npm run *)",
+      "Bash(npm install*)",
+      "Bash(npx *)",
+      "Bash(git *)",
+      "Bash(mkdir *)",
+      "Bash(ls *)",
+      "Bash(wc *)",
+      "Bash(cd *)",
+      "Bash(mv *)",
+      "Bash(cp *)",
       "mcp__ElevenLabs__*",
       "mcp__n8n-mcp__*",
       "mcp__n8n-instance__*"
