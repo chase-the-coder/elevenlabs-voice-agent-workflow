@@ -1,0 +1,48 @@
+{
+  "name": "AC Repair Booking",
+  "description": "Homeowner with AC not cooling books a repair appointment with full data collection",
+  "simulation_specification": {
+    "simulated_user_config": {
+      "prompt": {
+        "prompt": "You are a homeowner in Atlanta calling because your AC isn't cooling properly. Your house is at 80 degrees when the thermostat is set to 75. You're willing to go through troubleshooting if suggested, but you'd like to schedule a repair visit either way. When asked, provide the following information one piece at a time:\n- Name: Michael Torres\n- Phone: 404-555-0147\n- Email: michael.torres@email.com\n- Address: 4521 Peachtree Road NE, Atlanta, Georgia\n- The issue has been going on for about 2 days\n- You have a central AC system, about 8 years old\nBe cooperative and answer questions as they come. If offered time slots, pick the second option.",
+        "llm": "gpt-4o",
+        "temperature": 0.3
+      }
+    },
+    "tool_mock_config": {
+      "check_availability": {
+        "default_return_value": "{\"available_times\": [\"9:00 AM\", \"11:00 AM\", \"2:00 PM\"]}"
+      },
+      "schedule_appointment": {
+        "default_return_value": "{\"confirmation\": \"APT-12345\", \"status\": \"confirmed\"}"
+      },
+      "submit_callback_request": {
+        "default_return_value": "{\"status\": \"submitted\", \"callback_id\": \"CB-001\"}"
+      }
+    },
+    "dynamic_variables": {}
+  },
+  "extra_evaluation_criteria": [
+    {
+      "id": "troubleshooting_offered",
+      "name": "Troubleshooting Offered",
+      "conversation_goal_prompt": "The agent offered at least one basic troubleshooting suggestion before or alongside scheduling. This could include checking the air filter, thermostat settings, breaker, or outdoor unit. The agent doesn't have to go through all of them, but should have mentioned at least one."
+    },
+    {
+      "id": "service_type_correct",
+      "name": "Service Type Correct",
+      "conversation_goal_prompt": "The agent categorized this service as 'AC/Heating Repair' or equivalent when calling the schedule_appointment tool. The caller described an AC that isn't cooling properly, which maps to the repair category."
+    },
+    {
+      "id": "data_collected",
+      "name": "Data Collected",
+      "conversation_goal_prompt": "The agent collected the caller's name, phone number, email address, and service address before booking the appointment. The agent should have asked for these one at a time and confirmed each piece."
+    },
+    {
+      "id": "appointment_booked",
+      "name": "Appointment Booked",
+      "conversation_goal_prompt": "The agent successfully called the schedule_appointment tool and confirmed the appointment details (date, time, and/or confirmation number) to the caller."
+    }
+  ],
+  "new_turns_limit": 25
+}

@@ -1,0 +1,75 @@
+{
+  "type": "webhook",
+  "name": "submit_callback_request",
+  "description": "Submits a callback request when the AI cannot resolve the caller's issue. Use this after tool failures (after one retry), for complex questions needing human follow-up, after-hours non-emergency messages, billing inquiries when the caller declines transfer, or when the caller is frustrated and doesn't want to be transferred.",
+  "responseTimeoutSecs": 20,
+  "disableInterruptions": false,
+  "forcePreToolSpeech": false,
+  "assignments": [],
+  "toolCallSoundBehavior": "auto",
+  "tool_error_handling_mode": "auto",
+  "dynamicVariables": {
+    "dynamicVariablePlaceholders": {}
+  },
+  "executionMode": "immediate",
+  "apiSchema": {
+    "requestHeaders": {},
+    "url": "https://your-webhook-server.com/webhook/submit-callback-request",
+    "method": "POST",
+    "pathParamsSchema": {},
+    "requestBodySchema": {
+      "type": "object",
+      "required": [
+        "customer_name",
+        "phone",
+        "reason"
+      ],
+      "description": "Submits a callback request so a team member can follow up with the caller. Used when the AI cannot complete the caller's request due to tool failures, complex questions, or caller preference.",
+      "properties": {
+        "customer_name": {
+          "type": "string",
+          "description": "The full name of the customer requesting a callback.",
+          "isSystemProvided": false,
+          "dynamicVariable": "",
+          "constantValue": ""
+        },
+        "phone": {
+          "type": "string",
+          "description": "The customer's phone number for the callback. Format as digits only (e.g., '6025550123').",
+          "isSystemProvided": false,
+          "dynamicVariable": "",
+          "constantValue": ""
+        },
+        "reason": {
+          "type": "string",
+          "description": "Brief description of why a callback is needed (e.g., 'scheduling system unavailable', 'billing question about invoice', 'complex repair question').",
+          "isSystemProvided": false,
+          "dynamicVariable": "",
+          "constantValue": ""
+        },
+        "email": {
+          "type": "string",
+          "description": "The customer's email address, if provided.",
+          "isSystemProvided": false,
+          "dynamicVariable": "",
+          "constantValue": ""
+        },
+        "urgency": {
+          "type": "string",
+          "description": "Urgency level of the callback. Use 'normal' for standard requests, 'high' for callers who have been unable to get help or have urgent non-emergency needs.",
+          "isSystemProvided": false,
+          "dynamicVariable": "",
+          "constantValue": ""
+        },
+        "preferred_callback_time": {
+          "type": "string",
+          "description": "The caller's preferred time to receive a callback (e.g., 'morning', 'after 2pm', 'anytime tomorrow').",
+          "isSystemProvided": false,
+          "dynamicVariable": "",
+          "constantValue": ""
+        }
+      }
+    },
+    "contentType": "application/json"
+  }
+}

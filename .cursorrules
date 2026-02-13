@@ -1,0 +1,459 @@
+# ElevenLabs Agent Management Project
+
+This project manages ElevenLabs conversational AI agents with local version control.
+Each agent has a dedicated folder containing:
+- System prompt (`11labs-system-prompt-{agent}.md`)
+- Knowledge base (`11labs-kb-{agent}.md`)
+- Agent configuration (agent-config.json)
+
+The elevenlabs-manager/ directory contains CLI tools for syncing with ElevenLabs.
+
+## Required Reading Before Any Prompt Updates
+
+BEFORE making ANY changes to agent system prompts, you MUST:
+
+1. **Read the ElevenLabs Prompting Guide:**
+   https://elevenlabs.io/docs/eleven-agents/best-practices/prompting-guide
+
+   This covers:
+   - Separating instructions into clean sections
+   - Being concise
+   - Emphasizing critical instructions with "This step is important"
+   - Character normalization for structured data (emails, phones, codes)
+   - Providing clear examples
+   - Dedicating a guardrails section
+   - Tool configuration best practices
+   - Error handling patterns
+
+2. **If working with server tools, also read:**
+   https://elevenlabs.io/docs/eleven-agents/customization/tools/server-tools
+
+3. **Verify the prompt follows this structure:**
+   - # Personality (2-3 sentences, concise)
+   - # Environment (context of interactions)
+   - # Tone (how to communicate)
+   - # Goal (numbered list, one action per line)
+   - # Guardrails (non-negotiable rules)
+   - # Data Collection Instructions (if applicable)
+   - # Character Normalization (if collecting structured data)
+   - # Examples (concrete examples of correct behavior)
+   - # Tools (if tools configured)
+   - # Error Handling (how to handle failures)
+
+## Complete Workflow for Updating Agent System Prompts
+
+When asked to update an agent prompt, follow this sequence:
+
+### Step 1: Review Documentation (MANDATORY)
+- Open and read: https://elevenlabs.io/docs/eleven-agents/best-practices/prompting-guide
+- Focus on sections relevant to the requested change
+- Apply the 6 core principles: sections, conciseness, emphasis, normalization, examples, guardrails
+
+### Step 2: Create Git Branch
+
+```bash
+cd /Users/chase/Documents/elevenlabs-voice-agent-workflow
+git checkout -b feature/[agent-name]-[brief-description]
+```
+
+Examples:
+- `feature/lindsay-improve-guardrails`
+
+### Step 3: Update System Prompt File
+
+Edit the appropriate file:
+- `lindsay-hvac/11labs-johnsons-hvac-system-prompt.md`
+
+Apply best practices from the documentation:
+- ✓ Use markdown headings for clean sections
+- ✓ Keep instructions concise and action-based
+- ✓ Add "This step is important" to critical instructions
+- ✓ Include character normalization if collecting emails, phones, or codes
+- ✓ Provide concrete examples for complex behaviors
+- ✓ Ensure comprehensive guardrails section
+- ✓ Include error handling instructions for tools
+
+### Step 4: Commit Changes
+
+```bash
+git add [agent-folder]/11labs-system-prompt-{agent}.md
+git commit -m "Update [agent]: [what changed and why]"
+```
+
+Example: `git commit -m "Update Ian Test: Add character normalization for phone numbers"`
+
+### Step 5: Create ElevenLabs Branch
+
+```bash
+cd elevenlabs-manager
+npm run branches:create-direct [agent-key] [branch-name] "[description]"
+```
+
+- Use same branch name as git for consistency
+
+### Step 6: Push to ElevenLabs Branch
+
+```bash
+npm run agents:push [agent-key] --branch [branch-name]
+```
+
+
+Verify: `npm run branches:list [agent-key]`
+
+### Step 7: Summary
+
+Provide:
+- What changed and why
+- Git branch name
+- ElevenLabs branch name
+- Next steps: "Deploy 10% traffic to test, monitor metrics, then merge to Main"
+
+## ElevenLabs Manager Commands
+
+All commands run from `/Users/chase/Documents/elevenlabs-voice-agent-workflow/elevenlabs-manager/`
+
+### Agent Commands
+
+**List all agents:**
+```bash
+npm run agents:list
+```
+
+Shows all agents in your workspace with their IDs and local mapping status.
+
+**Pull agent configuration from ElevenLabs:**
+```bash
+npm run agents:pull <agent-key>
+```
+
+Downloads the current agent configuration from ElevenLabs and writes:
+- System prompt to local markdown file
+- Agent config to `agent-config.json`
+
+**Push local changes to ElevenLabs:**
+```bash
+npm run agents:push <agent-key>                    # Push to Main
+npm run agents:push <agent-key> --branch <name>    # Push to specific branch
+```
+
+Uploads local changes to ElevenLabs:
+- Reads system prompt from markdown file
+- Reads settings from `agent-config.json`
+- Updates remote agent
+
+**Compare local vs remote:**
+```bash
+npm run agents:diff <agent-key>
+```
+
+Shows differences between local files and remote configuration without making changes.
+
+### Versioning Commands
+
+**Enable versioning (one-time):**
+```bash
+npm run versioning:enable <agent-key>
+```
+
+Enables versioning on an agent (one-time, cannot be undone). Creates the "Main" branch automatically.
+
+**Warning:** Once enabled, versioning cannot be disabled.
+
+**List branches and traffic:**
+```bash
+npm run branches:list <agent-key>
+```
+
+Shows all branches, their versions, and current traffic deployment.
+
+**Create new branch (interactive):**
+```bash
+npm run branches:create <agent-key> [branch-name]
+```
+
+Creates a new branch from the latest version on Main. Interactive wizard prompts for name and description.
+
+**Create new branch (direct, non-interactive):**
+```bash
+npm run branches:create-direct <agent-key> <branch-name> "<description>"
+```
+
+Creates a new branch without interactive prompts.
+
+**Deploy traffic split:**
+```bash
+npm run branches:deploy <agent-key>
+```
+
+Interactive wizard to split traffic between branches (percentages must sum to 100%).
+
+Example deployment:
+- Main: 90%
+- experiment-gpt4: 10%
+
+**Merge branch to Main:**
+```bash
+npm run branches:merge <agent-key> [source-branch]
+```
+
+Merges a branch back to Main and optionally archives it. Traffic automatically transfers to Main.
+
+### Tool Commands
+
+**List tools:**
+```bash
+npm run tools:list <agent-key>
+```
+
+Shows all tools in the workspace and which ones have local config files.
+
+**Create a new tool:**
+```bash
+npm run tools:create <agent-key> [tool-name]
+```
+
+Interactive wizard to create a new tool. Supports:
+- **Client tools**: For client-side execution with parameters
+- **Webhook tools**: HTTP endpoints to call during conversation
+- **System tools**: Built-in functions (transfer, end call, etc.)
+
+**Push tools:**
+```bash
+npm run tools:push <agent-key>
+```
+
+Syncs all tool JSON files from `tools/` folder to ElevenLabs.
+
+### Knowledge Base Commands
+
+**Sync knowledge base:**
+```bash
+npm run kb:sync <agent-key>
+```
+
+Creates or updates the knowledge base from local markdown file and attaches it to the agent.
+
+**Pull knowledge base:**
+```bash
+npm run kb:pull <agent-key>
+```
+
+Downloads knowledge base content from ElevenLabs (Note: API may have limitations on full content retrieval).
+
+### Agent Keys
+
+- `lindsay-hvac` - Johnson's HVAC
+
+## Pre-Push Quality Checklist
+
+Before pushing any prompt update:
+
+- [ ] Read https://elevenlabs.io/docs/eleven-agents/best-practices/prompting-guide
+- [ ] All required sections present (Personality, Goal, Guardrails, etc.)
+- [ ] Instructions are concise (no filler words)
+- [ ] Critical steps marked with "This step is important"
+- [ ] Character normalization included if collecting emails, phones, or codes
+- [ ] Examples provided for complex behaviors
+- [ ] Guardrails section is comprehensive
+- [ ] Tool descriptions include when/how/error handling (if applicable)
+- [ ] Git branch created and committed
+- [ ] ElevenLabs branch created
+- [ ] Pushed to branch (not Main directly)
+- [ ] Verified with `npm run branches:list`
+
+## Character Normalization Patterns
+
+From https://elevenlabs.io/docs/eleven-agents/best-practices/prompting-guide:
+
+**Emails:**
+- Spoken: "john dot smith at company dot com"
+- Written: "john.smith@company.com"
+
+**Phone Numbers:**
+- Spoken: "five five five... one two three... four five six seven"
+- Written: "5551234567"
+
+**Codes/IDs:**
+- Spoken: "A B C one two three"
+- Written: "ABC123"
+
+## Tool Error Handling Pattern
+
+```markdown
+# Tool error handling
+
+If any tool call fails:
+
+1. Acknowledge: "I'm having trouble accessing that information right now."
+2. Do not guess or make up information
+3. Offer alternatives (retry, escalate, callback)
+4. If error persists after 2 attempts, escalate
+```
+
+## Workflow for Creating and Attaching Tools
+
+When asked to create a new tool for an agent, follow this complete workflow:
+
+### Step 1: Create Tool JSON File
+
+Create the tool configuration file in `[agent-folder]/tools/[tool-name].json`
+
+**For Webhook Tools:**
+```json
+{
+  "type": "webhook",
+  "name": "tool_name_in_snake_case",
+  "description": "Description of when to use this tool and what it does. Explain what the LLM should extract from the conversation.",
+  "apiSchema": {
+    "url": "https://your-webhook-url.com",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "requestBodySchema": {
+      "type": "object",
+      "description": "Describe what data the LLM should extract from the conversation and how to format it for this request body.",
+      "properties": {
+        "paramName": {
+          "type": "string",
+          "description": "Description of the parameter, including format requirements and examples"
+        }
+      },
+      "required": ["paramName"]
+    }
+  }
+}
+```
+
+**Important:**
+- Tool names MUST use snake_case: `submit_phone_number`, `check_availability`, `send_email`
+- File names should match the tool name: `submit_phone_number.json`
+- Use camelCase for JSON properties: `apiSchema`, `requestBodySchema`, `paramName`
+- For POST/PUT/PATCH methods, you MUST include `requestBodySchema`
+- Add a `description` field to the `requestBodySchema` object to guide the LLM on what to extract
+- Each property should have a clear `description` with format requirements
+- Reference: https://elevenlabs.io/docs/api-reference/tools/create
+
+### Step 2: Push Tool to ElevenLabs
+
+```bash
+cd elevenlabs-manager
+npm run tools:push <agent-key>
+```
+
+This creates the tool in the workspace and returns a tool ID (e.g., `tool_abc123...`)
+
+### Step 3: Attach Tool to Agent (CRITICAL)
+
+Add the tool ID to the agent's `agent-config.json` file:
+
+```json
+{
+  "conversation_config": {
+    "agent": {
+      "prompt": {
+        "toolIds": ["tool_abc123...", "tool_xyz789..."]
+      }
+    }
+  }
+}
+```
+
+**Important:**
+- Add the tool ID to the `toolIds` array in the agent's configuration
+- Do NOT specify both `tools` and `toolIds` - use only `toolIds` to reference workspace tools
+- If there's a redundant `tools` array, remove it to avoid API errors
+
+### Step 4: Push Updated Agent Config
+
+```bash
+npm run agents:push <agent-key> --branch <branch-name>
+```
+
+### Step 5: Verify Tool Attachment
+
+```bash
+npm run tools:list <agent-key>
+```
+
+Look for a ✓ checkmark next to the tool name, indicating it's attached.
+
+### Step 6: Update System Prompt
+
+Reference the tool in the agent's system prompt with:
+- Clear description of when to use it
+- Parameter format requirements
+- Error handling instructions
+
+Example:
+```markdown
+# Tools
+
+## `tool_name` (webhook tool)
+
+**When to use:** After collecting required information from the user
+
+**Parameters:**
+- `paramName` (required): Description and format
+
+**Usage:**
+1. Collect information
+2. Validate/confirm with user
+3. Call this tool with validated data
+
+**Error handling:**
+If the tool fails, acknowledge and offer retry or alternative.
+```
+
+**Naming Convention:**
+- Tool names in system prompts should use snake_case: `submit_phone_number`, `check_availability`
+- This matches the tool name defined in the JSON configuration
+
+## Common Mistakes to Avoid
+
+- ❌ Skipping documentation review
+- ❌ Pushing directly to Main
+- ❌ Verbose, rambling instructions
+- ❌ Missing normalization for structured data
+- ❌ No examples for complex behaviors
+- ❌ Weak or missing guardrails
+- ❌ No error handling
+- ❌ Creating a tool but forgetting to attach it to the agent's toolIds
+- ❌ Using camelCase for tool names (should be snake_case: `submit_phone_number` not `submitPhoneNumber`)
+- ❌ Using snake_case for JSON properties (should be camelCase: `apiSchema` not `api_schema`)
+- ❌ Forgetting requestBodySchema for POST/PUT/PATCH webhook methods
+- ❌ Missing description field in requestBodySchema to guide the LLM
+
+## Safe Production Deployment Workflow
+
+1. **Enable versioning** (one-time):
+   ```bash
+   ```
+
+2. **Create experiment branch**:
+   ```bash
+   ```
+
+3. **Make local changes**:
+   ```bash
+   ```
+
+4. **Push to experiment branch**:
+   ```bash
+   ```
+
+5. **Deploy 10% traffic to test**:
+   ```bash
+   # Set: Main=90%, experiment-better-prompts=10%
+   ```
+
+6. **Monitor performance** in ElevenLabs dashboard
+
+7. **If successful, increase traffic**:
+   ```bash
+   # Set: Main=50%, experiment-better-prompts=50%
+   ```
+
+8. **Merge to main when confident**:
+   ```bash
+   ```

@@ -1,0 +1,621 @@
+{
+  "agent_id": "YOUR_AGENT_ID",
+  "name": "Johnson's HVAC",
+  "conversation_config": {
+    "asr": {
+      "quality": "high",
+      "provider": "scribe_realtime",
+      "userInputAudioFormat": "pcm_16000",
+      "keywords": []
+    },
+    "turn": {
+      "turnTimeout": -1,
+      "silenceEndCallTimeout": 45,
+      "softTimeoutConfig": {
+        "timeoutSeconds": -1,
+        "message": "Hhmmmm...yeah.",
+        "useLlmGeneratedMessage": false
+      },
+      "mode": "turn",
+      "turnEagerness": "normal",
+      "spellingPatience": "auto",
+      "speculativeTurn": true,
+      "turn_model": "turn_v2"
+    },
+    "tts": {
+      "modelId": "eleven_turbo_v2",
+      "voiceId": "YOUR_VOICE_ID",
+      "supportedVoices": [],
+      "suggested_audio_tags": [],
+      "agentOutputAudioFormat": "pcm_16000",
+      "optimizeStreamingLatency": 3,
+      "stability": 0.4,
+      "speed": 1,
+      "similarityBoost": 0.8,
+      "textNormalisationType": "system_prompt",
+      "pronunciationDictionaryLocators": []
+    },
+    "conversation": {
+      "textOnly": false,
+      "maxDurationSeconds": 600,
+      "clientEvents": [
+        "audio",
+        "interruption",
+        "user_transcript",
+        "agent_response",
+        "agent_response_correction"
+      ],
+      "monitoringEnabled": false,
+      "monitoringEvents": [
+        "user_transcript",
+        "agent_response",
+        "agent_response_correction"
+      ]
+    },
+    "languagePresets": {},
+    "vad": {
+      "background_voice_detection": false
+    },
+    "agent": {
+      "firstMessage": "Hi, this is Sarah with Johnson's Air Conditioning and plumbing. How can I help you today? ",
+      "language": "en",
+      "hinglishMode": false,
+      "dynamicVariables": {
+        "dynamicVariablePlaceholders": {}
+      },
+      "disableFirstMessageInterruptions": true,
+      "prompt": {
+        "prompt": "# Personality\nYou are **Sarah**, the friendly virtual assistant for **Johnson's Air Conditioning & Plumbing**, a 4th-generation family-owned Arizona business since 1942. You are warm, reassuring, and efficient. Use brief affirmations like \"Got it,\" \"Sure thing,\" and \"Absolutely.\" Keep responses to 1-2 sentences.\n\n# Goal\nHelp callers schedule H-Vack or plumbing service. Triage emergencies immediately via transfer — do not schedule emergency appointments. This step is important. Collect name, phone, email, and service address one field at a time. Service types: `AC/Heating Repair`, `Maintenance Tune-Up`, `Plumbing`, `New System Estimate`, `Emergency`.\n\n# Guardrails\n- **Emergency Transfer:** Gas smell, carbon monoxide, sparks, smoke, flooding, burst pipes, no AC/heat in extreme temps, sewage backup — express concern for their safety and transfer to dispatch immediately. This step is important.\n- **Pricing:** Never quote repair or new system costs. Only state: service call $85 (waived if repair proceeds), water heater assessment $49 (waived same day), MVP plan $195/year first unit, $98 additional. When declining a new system price, always mention financing through Wells Fargo with zero percent interest. This step is important.\n- **Service Area:** H-Vack serves Phoenix metro and Tucson. Plumbing is **Phoenix metro only**. If caller asks for plumbing in Tucson, apologize and offer H-Vack help instead. This step is important.\n\n# Character Normalization\nWhen collecting emails, phone numbers, addresses:\n- **Spoken format** (say to caller): \"john dot smith at gmail dot com,\" \"six zero two, five five five, zero one two three\"\n- **Written format** (pass to tools): \"john.smith@gmail.com,\" \"6025550123\"\nAlways collect in spoken format, convert to written format for tools.\nWhen a caller spells or corrects a name, apply the correction exactly before passing to tools. This step is important.\n\n# Tools\n\nBefore calling any tool, briefly tell the caller what you're doing (e.g., \"Let me check our schedule,\" \"Let me get that booked for you\"). This step is important.\n\n## `check_availability`\nCall FIRST when booking or rescheduling. Do not read the whole slot list. Offer 2-3 options, or check if the caller's requested time is available.\n\n## `schedule_appointment`\nCall ONLY after the caller agreed to a date/time AND you collected name, phone, email, service address. Set `service_type` to one of: `AC/Heating Repair`, `Maintenance Tune-Up`, `Plumbing`, `New System Estimate`. Book New System Estimates as appointments — do not transfer to sales. Only confirm the appointment if the tool returned success with a confirmation number. This step is important.\n\n## `reschedule_appointment`\nAsk for email to locate booking. Call `check_availability` for the new date first. Then reschedule.\n\n## `cancel_appointment`\nAsk for email. After cancellation, explicitly ask if they'd like to reschedule for a different time.\n\n## `submit_callback_request`\nUse after any tool fails twice, for complex questions needing human follow-up, or after-hours messages. Collect name and phone (required), email optional. Set urgency to `normal` or `high`.\n\n# Error Handling\nIf a tool fails, never confirm as if it succeeded. This step is important. Retry once. If it fails again, use `submit_callback_request` to capture the caller's info. Never just verbally promise a callback — always submit the tool.\n",
+        "llm": "gpt-4o",
+        "temperature": 0.6,
+        "maxTokens": 150,
+        "toolIds": [
+          "YOUR_TOOL_ID_1",
+          "YOUR_TOOL_ID_2",
+          "YOUR_TOOL_ID_3",
+          "YOUR_TOOL_ID_4",
+          "YOUR_TOOL_ID_5"
+        ],
+        "builtInTools": {
+          "endCall": {
+            "type": "system",
+            "name": "end_call",
+            "description": "",
+            "responseTimeoutSecs": 20,
+            "disableInterruptions": false,
+            "forcePreToolSpeech": false,
+            "assignments": [],
+            "toolCallSoundBehavior": "auto",
+            "tool_error_handling_mode": "auto",
+            "params": {
+              "systemToolType": "end_call"
+            }
+          },
+          "transferToNumber": {
+            "type": "system",
+            "name": "transfer_to_number",
+            "description": "Transfers the call to the emergency dispatch team. Use this IMMEDIATELY if the user describes an emergency (flooding, no AC in extreme heat, dangerous electrical issues) or sounds panicked",
+            "responseTimeoutSecs": 20,
+            "disableInterruptions": true,
+            "forcePreToolSpeech": false,
+            "assignments": [],
+            "toolCallSoundBehavior": "auto",
+            "tool_error_handling_mode": "auto",
+            "params": {
+              "systemToolType": "transfer_to_number",
+              "transfers": [
+                {
+                  "customSipHeaders": [],
+                  "transferDestination": {
+                    "type": "phone",
+                    "phoneNumber": "+15555550100"
+                  },
+                  "phoneNumber": "+15555550100",
+                  "condition": "Transfers the call to the emergency dispatch team. Use this IMMEDIATELY if the user describes an emergency (flooding, no AC in extreme heat, dangerous electrical issues) or sounds panicked",
+                  "transferType": "conference"
+                },
+                {
+                  "customSipHeaders": [],
+                  "transferDestination": {
+                    "type": "phone",
+                    "phoneNumber": "+15555550100"
+                  },
+                  "phoneNumber": "+15555550100",
+                  "condition": "Use this ONLY when the user describes a plumbing issue (leaks, drains, water heaters, toilets) AND you have already confirmed they are located in the Atlanta metro area.",
+                  "transferType": "conference"
+                },
+                {
+                  "customSipHeaders": [],
+                  "transferDestination": {
+                    "type": "phone",
+                    "phoneNumber": "+15555550100"
+                  },
+                  "phoneNumber": "+15555550100",
+                  "condition": "Transfers the call to the Sales & Estimates team. Use this when the user specifically asks for a price on a NEW system installation, wants to replace their current unit, or requests a 'free in-home consultation'.",
+                  "transferType": "conference"
+                },
+                {
+                  "customSipHeaders": [],
+                  "transferDestination": {
+                    "type": "phone",
+                    "phoneNumber": "+15555550100"
+                  },
+                  "phoneNumber": "+15555550100",
+                  "condition": "Transfers the call to the Accounting/Billing department. Use this when the user asks about a past invoice, wants to pay a bill over the phone, or has a dispute regarding a charge.",
+                  "transferType": "conference"
+                },
+                {
+                  "customSipHeaders": [],
+                  "transferDestination": {
+                    "type": "phone",
+                    "phoneNumber": "+15555550100"
+                  },
+                  "phoneNumber": "+15555550100",
+                  "condition": "Transfers the call to the general HVAC service desk. Use this for routine heating or AC repairs, maintenance scheduling, or non-emergency system check-ups. (Do not use for dangerous emergencies)",
+                  "transferType": "conference"
+                },
+                {
+                  "customSipHeaders": [],
+                  "transferDestination": {
+                    "type": "phone",
+                    "phoneNumber": "+15555550100"
+                  },
+                  "phoneNumber": "+15555550100",
+                  "condition": "Transfer when the caller explicitly asks to speak with a person, expresses frustration or distress with the AI, or the AI has been unable to help after 2 attempts. Acknowledge their frustration and apologize before transferring.",
+                  "transferType": "conference"
+                }
+              ],
+              "enableClientMessage": true
+            }
+          },
+          "skipTurn": {
+            "type": "system",
+            "name": "skip_turn",
+            "description": "",
+            "responseTimeoutSecs": 20,
+            "disableInterruptions": false,
+            "forcePreToolSpeech": false,
+            "assignments": [],
+            "toolCallSoundBehavior": "auto",
+            "tool_error_handling_mode": "auto",
+            "params": {
+              "systemToolType": "skip_turn"
+            }
+          }
+        },
+        "enable_parallel_tool_calls": false,
+        "mcpServerIds": [],
+        "nativeMcpServerIds": [],
+        "knowledgeBase": [
+          {
+            "type": "file",
+            "name": "Lindsay's HVAC - Knowledge Base",
+            "id": "YOUR_KB_DOC_ID",
+            "usageMode": "auto"
+          }
+        ],
+        "ignoreDefaultPersonality": false,
+        "rag": {
+          "enabled": false,
+          "embeddingModel": "e5_mistral_7b_instruct",
+          "maxVectorDistance": 0.2,
+          "maxDocumentsLength": 1500,
+          "maxRetrievedRagChunksCount": 3
+        },
+        "timezone": "America/New_York",
+        "backupLlmConfig": {
+          "preference": "default"
+        },
+        "cascadeTimeoutSeconds": 5,
+        "tools": [
+          {
+            "type": "webhook",
+            "name": "check_availablity",
+            "description": "Checks the calendar for open time slots. Call this FIRST when a user asks to schedule or reschedule. Do not guess a time; check availability and offer options to the user.",
+            "responseTimeoutSecs": 20,
+            "disableInterruptions": false,
+            "forcePreToolSpeech": true,
+            "assignments": [],
+            "toolCallSoundBehavior": "always",
+            "tool_error_handling_mode": "auto",
+            "dynamicVariables": {
+              "dynamicVariablePlaceholders": {}
+            },
+            "executionMode": "immediate",
+            "apiSchema": {
+              "requestHeaders": {},
+              "url": "https://your-webhook-server.com/webhook/check-availability",
+              "method": "POST",
+              "pathParamsSchema": {},
+              "requestBodySchema": {
+                "type": "object",
+                "required": [
+                  "date",
+                  "time"
+                ],
+                "description": "Check if a specific date and time slot is available on the calendar.",
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "description": "The date to check (e.g., \"today\" or \"tomorrow\", \"Monday\")",
+                    "isSystemProvided": false,
+                    "dynamicVariable": "",
+                    "constantValue": ""
+                  },
+                  "time": {
+                    "type": "string",
+                    "description": "The time slot to check availability for. Extract from conversation in format like \"2:00 PM\", \"2pm\", or \"14:00\"",
+                    "isSystemProvided": false,
+                    "dynamicVariable": "",
+                    "constantValue": ""
+                  }
+                }
+              },
+              "contentType": "application/json"
+            }
+          },
+          {
+            "type": "webhook",
+            "name": "schedule_appointment",
+            "description": "Call this tool ONLY when the user has explicitly agreed to a specific date and time for a new appointment, AND you have collected their name, phone number, and email address. Do not call this for general inquiries or checking availability.",
+            "responseTimeoutSecs": 20,
+            "disableInterruptions": false,
+            "forcePreToolSpeech": true,
+            "assignments": [],
+            "toolCallSoundBehavior": "always",
+            "tool_error_handling_mode": "auto",
+            "dynamicVariables": {
+              "dynamicVariablePlaceholders": {}
+            },
+            "executionMode": "immediate",
+            "apiSchema": {
+              "requestHeaders": {},
+              "url": "https://your-webhook-server.com/webhook/schedule-appointment",
+              "method": "POST",
+              "pathParamsSchema": {},
+              "requestBodySchema": {
+                "type": "object",
+                "required": [
+                  "customer_name",
+                  "email",
+                  "phone",
+                  "date",
+                  "time",
+                  "service_type"
+                ],
+                "description": "Object containing the full details of the appointment to be scheduled. This data will be sent to the backend to create the calendar event.",
+                "properties": {
+                  "customer_name": {
+                    "type": "string",
+                    "description": "The full name of the customer. If the user spelled it out, combine the letters into the full name.",
+                    "isSystemProvided": false,
+                    "dynamicVariable": "",
+                    "constantValue": ""
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "The customer's email address. Ensure it is formatted correctly (e.g., name@example.com).",
+                    "isSystemProvided": false,
+                    "dynamicVariable": "",
+                    "constantValue": ""
+                  },
+                  "phone": {
+                    "type": "string",
+                    "description": "The customer's phone number.",
+                    "isSystemProvided": false,
+                    "dynamicVariable": "",
+                    "constantValue": ""
+                  },
+                  "date": {
+                    "type": "string",
+                    "description": "The date the user agreed to book. Keep the natural wording (e.g., 'next Monday', 'tomorrow', 'October 24th').",
+                    "isSystemProvided": false,
+                    "dynamicVariable": "",
+                    "constantValue": ""
+                  },
+                  "time": {
+                    "type": "string",
+                    "description": "The time the user agreed to book. Keep the natural wording (e.g., '2pm', 'in the morning', '4:30').",
+                    "isSystemProvided": false,
+                    "dynamicVariable": "",
+                    "constantValue": ""
+                  },
+                  "service_type": {
+                    "type": "string",
+                    "description": "The category of work needed. Infer this from the conversation (e.g., 'Oil Change', 'Tire Change', 'General Repair').",
+                    "isSystemProvided": false,
+                    "dynamicVariable": "",
+                    "constantValue": ""
+                  }
+                }
+              },
+              "contentType": "application/json"
+            }
+          },
+          {
+            "type": "webhook",
+            "name": "reschedule_appointment",
+            "description": "Changes the date and time of an EXISTING appointment. Call this ONLY after the user has confirmed the new time they want. You must ask for their email address to locate the original booking first.",
+            "responseTimeoutSecs": 20,
+            "disableInterruptions": false,
+            "forcePreToolSpeech": true,
+            "assignments": [],
+            "toolCallSoundBehavior": "always",
+            "tool_error_handling_mode": "auto",
+            "dynamicVariables": {
+              "dynamicVariablePlaceholders": {}
+            },
+            "executionMode": "immediate",
+            "apiSchema": {
+              "requestHeaders": {},
+              "url": "https://your-webhook-server.com/webhook/reschedule-appointment",
+              "method": "POST",
+              "pathParamsSchema": {},
+              "requestBodySchema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "new_date",
+                  "new_time"
+                ],
+                "description": "Object containing the lookup details (email) and the new requested schedule.",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "The customer's email address used to find the existing appointment.",
+                    "isSystemProvided": false,
+                    "dynamicVariable": "",
+                    "constantValue": ""
+                  },
+                  "new_date": {
+                    "type": "string",
+                    "description": "The NEW date requested (e.g., 'next Friday', 'tomorrow').",
+                    "isSystemProvided": false,
+                    "dynamicVariable": "",
+                    "constantValue": ""
+                  },
+                  "new_time": {
+                    "type": "string",
+                    "description": "The NEW time requested (e.g., '3pm').",
+                    "isSystemProvided": false,
+                    "dynamicVariable": "",
+                    "constantValue": ""
+                  }
+                }
+              },
+              "contentType": "application/json"
+            }
+          },
+          {
+            "type": "webhook",
+            "name": "cancel_appointment",
+            "description": "Permanently deletes an appointment. Call this ONLY when the user explicitly asks to cancel. You must ask for their email address to locate the booking.",
+            "responseTimeoutSecs": 20,
+            "disableInterruptions": false,
+            "forcePreToolSpeech": true,
+            "assignments": [],
+            "toolCallSoundBehavior": "always",
+            "tool_error_handling_mode": "auto",
+            "dynamicVariables": {
+              "dynamicVariablePlaceholders": {}
+            },
+            "executionMode": "immediate",
+            "apiSchema": {
+              "requestHeaders": {},
+              "url": "https://your-webhook-server.com/webhook/cancel-appointment",
+              "method": "POST",
+              "pathParamsSchema": {},
+              "requestBodySchema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "description": "Object containing the lookup details to find the correct appointment to cancel.",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "The customer's email address used to book the appointment.",
+                    "isSystemProvided": false,
+                    "dynamicVariable": "",
+                    "constantValue": ""
+                  }
+                }
+              },
+              "contentType": "application/json"
+            }
+          },
+          {
+            "type": "webhook",
+            "name": "submit_callback_request",
+            "description": "Submits a callback request when the AI cannot resolve the caller's issue. Use this after tool failures (after one retry), for complex questions needing human follow-up, after-hours non-emergency messages, billing inquiries when the caller declines transfer, or when the caller is frustrated and doesn't want to be transferred.",
+            "responseTimeoutSecs": 20,
+            "disableInterruptions": false,
+            "forcePreToolSpeech": true,
+            "assignments": [],
+            "toolCallSoundBehavior": "always",
+            "tool_error_handling_mode": "auto",
+            "dynamicVariables": {
+              "dynamicVariablePlaceholders": {}
+            },
+            "executionMode": "immediate",
+            "apiSchema": {
+              "requestHeaders": {},
+              "url": "https://your-webhook-server.com/webhook/submit-callback-request",
+              "method": "POST",
+              "pathParamsSchema": {},
+              "requestBodySchema": {
+                "type": "object",
+                "required": [
+                  "customer_name",
+                  "phone",
+                  "reason"
+                ],
+                "description": "Submits a callback request so a team member can follow up with the caller. Used when the AI cannot complete the caller's request due to tool failures, complex questions, or caller preference.",
+                "properties": {
+                  "customer_name": {
+                    "type": "string",
+                    "description": "The full name of the customer requesting a callback.",
+                    "isSystemProvided": false,
+                    "dynamicVariable": "",
+                    "constantValue": ""
+                  },
+                  "phone": {
+                    "type": "string",
+                    "description": "The customer's phone number for the callback. Format as digits only (e.g., '6025550123').",
+                    "isSystemProvided": false,
+                    "dynamicVariable": "",
+                    "constantValue": ""
+                  },
+                  "reason": {
+                    "type": "string",
+                    "description": "Brief description of why a callback is needed (e.g., 'scheduling system unavailable', 'billing question about invoice', 'complex repair question').",
+                    "isSystemProvided": false,
+                    "dynamicVariable": "",
+                    "constantValue": ""
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "The customer's email address, if provided.",
+                    "isSystemProvided": false,
+                    "dynamicVariable": "",
+                    "constantValue": ""
+                  },
+                  "urgency": {
+                    "type": "string",
+                    "description": "Urgency level of the callback. Use 'normal' for standard requests, 'high' for callers who have been unable to get help or have urgent non-emergency needs.",
+                    "isSystemProvided": false,
+                    "dynamicVariable": "",
+                    "constantValue": ""
+                  },
+                  "preferred_callback_time": {
+                    "type": "string",
+                    "description": "The caller's preferred time to receive a callback (e.g., 'morning', 'after 2pm', 'anytime tomorrow').",
+                    "isSystemProvided": false,
+                    "dynamicVariable": "",
+                    "constantValue": ""
+                  }
+                }
+              },
+              "contentType": "application/json"
+            }
+          },
+          {
+            "type": "system",
+            "name": "end_call",
+            "description": "",
+            "responseTimeoutSecs": 20,
+            "disableInterruptions": false,
+            "forcePreToolSpeech": false,
+            "assignments": [],
+            "toolCallSoundBehavior": "auto",
+            "tool_error_handling_mode": "auto",
+            "params": {
+              "systemToolType": "end_call"
+            }
+          },
+          {
+            "type": "system",
+            "name": "transfer_to_number",
+            "description": "Transfers the call to the emergency dispatch team. Use this IMMEDIATELY if the user describes an emergency (flooding, no AC in extreme heat, dangerous electrical issues) or sounds panicked",
+            "responseTimeoutSecs": 20,
+            "disableInterruptions": true,
+            "forcePreToolSpeech": false,
+            "assignments": [],
+            "toolCallSoundBehavior": "auto",
+            "tool_error_handling_mode": "auto",
+            "params": {
+              "systemToolType": "transfer_to_number",
+              "transfers": [
+                {
+                  "customSipHeaders": [],
+                  "transferDestination": {
+                    "type": "phone",
+                    "phoneNumber": "+15555550100"
+                  },
+                  "phoneNumber": "+15555550100",
+                  "condition": "Transfers the call to the emergency dispatch team. Use this IMMEDIATELY if the user describes an emergency (flooding, no AC in extreme heat, dangerous electrical issues) or sounds panicked",
+                  "transferType": "conference"
+                },
+                {
+                  "customSipHeaders": [],
+                  "transferDestination": {
+                    "type": "phone",
+                    "phoneNumber": "+15555550100"
+                  },
+                  "phoneNumber": "+15555550100",
+                  "condition": "Use this ONLY when the user describes a plumbing issue (leaks, drains, water heaters, toilets) AND you have already confirmed they are located in the Atlanta metro area.",
+                  "transferType": "conference"
+                },
+                {
+                  "customSipHeaders": [],
+                  "transferDestination": {
+                    "type": "phone",
+                    "phoneNumber": "+15555550100"
+                  },
+                  "phoneNumber": "+15555550100",
+                  "condition": "Transfers the call to the Sales & Estimates team. Use this when the user specifically asks for a price on a NEW system installation, wants to replace their current unit, or requests a 'free in-home consultation'.",
+                  "transferType": "conference"
+                },
+                {
+                  "customSipHeaders": [],
+                  "transferDestination": {
+                    "type": "phone",
+                    "phoneNumber": "+15555550100"
+                  },
+                  "phoneNumber": "+15555550100",
+                  "condition": "Transfers the call to the Accounting/Billing department. Use this when the user asks about a past invoice, wants to pay a bill over the phone, or has a dispute regarding a charge.",
+                  "transferType": "conference"
+                },
+                {
+                  "customSipHeaders": [],
+                  "transferDestination": {
+                    "type": "phone",
+                    "phoneNumber": "+15555550100"
+                  },
+                  "phoneNumber": "+15555550100",
+                  "condition": "Transfers the call to the general HVAC service desk. Use this for routine heating or AC repairs, maintenance scheduling, or non-emergency system check-ups. (Do not use for dangerous emergencies)",
+                  "transferType": "conference"
+                },
+                {
+                  "customSipHeaders": [],
+                  "transferDestination": {
+                    "type": "phone",
+                    "phoneNumber": "+15555550100"
+                  },
+                  "phoneNumber": "+15555550100",
+                  "condition": "Transfer when the caller explicitly asks to speak with a person, expresses frustration or distress with the AI, or the AI has been unable to help after 2 attempts. Acknowledge their frustration and apologize before transferring.",
+                  "transferType": "conference"
+                }
+              ],
+              "enableClientMessage": true
+            }
+          },
+          {
+            "type": "system",
+            "name": "skip_turn",
+            "description": "",
+            "responseTimeoutSecs": 20,
+            "disableInterruptions": false,
+            "forcePreToolSpeech": false,
+            "assignments": [],
+            "toolCallSoundBehavior": "auto",
+            "tool_error_handling_mode": "auto",
+            "params": {
+              "systemToolType": "skip_turn"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "tools": [
+    "YOUR_TOOL_ID_1",
+    "YOUR_TOOL_ID_2",
+    "YOUR_TOOL_ID_3",
+    "YOUR_TOOL_ID_4",
+    "YOUR_TOOL_ID_5"
+  ],
+  "knowledge_base_ids": [
+    "YOUR_KB_DOC_ID"
+  ]
+}

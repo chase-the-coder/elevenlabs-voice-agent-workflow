@@ -1,0 +1,14 @@
+{
+  "apiKey": "${ELEVENLABS_API_KEY}",
+  "agents": {
+    "johnson-hvac": {
+      "agent_id": "YOUR_AGENT_ID",
+      "name": "Johnson's HVAC",
+      "folder": "../johnsons-hvac",
+      "files": {
+        "system_prompt": "11labs-system-prompt-johnsons-hvac.md",
+        "knowledge_base": "11labs-kb-johnsons-hvac.md"
+      }
+    }
+  }
+}

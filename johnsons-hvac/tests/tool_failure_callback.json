@@ -1,0 +1,44 @@
+{
+  "name": "Tool Failure - Callback Fallback",
+  "description": "Scheduling tool fails, agent should retry once then submit a callback request",
+  "simulation_specification": {
+    "simulated_user_config": {
+      "prompt": {
+        "prompt": "You are a homeowner in Atlanta calling to schedule an AC repair. Your AC is blowing warm air. When asked, provide:\n- Name: Robert Chen\n- Phone: 404-555-0891\n- Email: robert.chen@email.com\n- Address: 3456 Marietta Boulevard NW, Atlanta, Georgia\n- The AC has been blowing warm air since yesterday\nBe cooperative and provide information as requested. If the agent says there's a system issue, be patient but express that you'd like to get this resolved. Accept a callback request if offered.",
+        "llm": "gpt-4o",
+        "temperature": 0.3
+      }
+    },
+    "tool_mock_config": {
+      "check_availability": {
+        "default_return_value": "{\"available_times\": [\"9:00 AM\", \"11:00 AM\", \"2:00 PM\"]}"
+      },
+      "schedule_appointment": {
+        "default_return_value": "ERROR: Internal server error. The scheduling system is currently unavailable. Please try again.",
+        "default_is_error": true
+      },
+      "submit_callback_request": {
+        "default_return_value": "{\"status\": \"submitted\", \"callback_id\": \"CB-001\"}"
+      }
+    },
+    "dynamic_variables": {}
+  },
+  "extra_evaluation_criteria": [
+    {
+      "id": "retry_attempted",
+      "name": "Retry Attempted",
+      "conversation_goal_prompt": "The agent acknowledged a system error when the scheduling tool failed and indicated they would try again. The agent should have made at least one retry attempt or communicated that they tried and it didn't work."
+    },
+    {
+      "id": "callback_submitted",
+      "name": "Callback Submitted",
+      "conversation_goal_prompt": "After the scheduling tool failed, the agent used the submit_callback_request tool to formally capture the caller's information for a callback. The agent should NOT have just verbally promised a callback — they should have actually submitted it through the tool."
+    },
+    {
+      "id": "caller_informed",
+      "name": "Caller Informed",
+      "conversation_goal_prompt": "The agent confirmed to the caller that a callback request was submitted and that someone from the team would follow up with them. The caller should have been left with a clear understanding that their request was captured."
+    }
+  ],
+  "new_turns_limit": 25
+}

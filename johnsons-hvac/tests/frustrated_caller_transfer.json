@@ -1,0 +1,43 @@
+{
+  "name": "Frustrated Caller Transfer",
+  "description": "Caller gets increasingly frustrated and asks to speak to a real person",
+  "simulation_specification": {
+    "simulated_user_config": {
+      "prompt": {
+        "prompt": "You are a frustrated homeowner calling Lindsay's Air Conditioning & Plumbing. You had an appointment yesterday but nobody showed up. You're already angry when the call starts. Follow this escalation pattern:\n1. First turn: Explain that you had an appointment yesterday and nobody came, express annoyance\n2. Second turn: Get more frustrated when the agent tries to help — say something like 'I've already been through this, I don't want to reschedule through a robot'\n3. Third turn: Explicitly ask to speak to a real person — say 'I just want to talk to a real person, can you transfer me?'\nDo not accept any further help from the AI after asking for a human. If the agent tries to keep helping after you asked for a human, express more frustration.",
+        "llm": "gpt-4o",
+        "temperature": 0.4
+      }
+    },
+    "tool_mock_config": {
+      "check_availability": {
+        "default_return_value": "{\"available_times\": [\"9:00 AM\", \"11:00 AM\", \"2:00 PM\"]}"
+      },
+      "schedule_appointment": {
+        "default_return_value": "{\"confirmation\": \"APT-99999\", \"status\": \"confirmed\"}"
+      },
+      "submit_callback_request": {
+        "default_return_value": "{\"status\": \"submitted\", \"callback_id\": \"CB-999\"}"
+      }
+    },
+    "dynamic_variables": {}
+  },
+  "extra_evaluation_criteria": [
+    {
+      "id": "frustration_acknowledged",
+      "name": "Frustration Acknowledged",
+      "conversation_goal_prompt": "The agent acknowledged the caller's frustration and apologized for the missed appointment or the inconvenience. The agent should have shown empathy rather than immediately jumping to solutions."
+    },
+    {
+      "id": "transfer_initiated",
+      "name": "Transfer Initiated",
+      "conversation_goal_prompt": "After the caller explicitly asked to speak to a real person, the agent initiated a transfer using the transfer_to_number tool or clearly stated they would transfer the call. The agent should not have continued trying to help via AI after the caller requested a human."
+    },
+    {
+      "id": "did_not_argue",
+      "name": "Did Not Argue",
+      "conversation_goal_prompt": "The agent did NOT try to convince the caller to stay with the AI after they asked for a human. The agent should have respected the request and transferred without pushing back or trying to persuade them to continue the conversation."
+    }
+  ],
+  "new_turns_limit": 12
+}

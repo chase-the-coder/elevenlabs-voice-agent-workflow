@@ -1,0 +1,49 @@
+{
+  "name": "elevenlabs-manager",
+  "version": "1.0.0",
+  "description": "CLI tool to manage ElevenLabs conversational AI agents",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "agents:list": "tsx src/index.ts agents list",
+    "agents:pull": "tsx src/index.ts agents pull",
+    "agents:push": "tsx src/index.ts agents push",
+    "agents:diff": "tsx src/index.ts agents diff",
+    "tools:list": "tsx src/index.ts tools list",
+    "tools:create": "tsx src/index.ts tools create",
+    "tools:push": "tsx src/index.ts tools push",
+    "kb:sync": "tsx src/index.ts kb sync",
+    "kb:pull": "tsx src/index.ts kb pull",
+    "discover": "tsx src/index.ts discover",
+    "versioning:enable": "tsx src/index.ts versioning enable",
+    "branches:list": "tsx src/index.ts branches list",
+    "branches:create": "tsx src/index.ts branches create",
+    "branches:create-direct": "tsx create-branch-direct.js",
+    "branches:deploy": "tsx src/index.ts branches deploy",
+    "branches:merge": "tsx src/index.ts branches merge",
+    "tests:run": "tsx src/index.ts tests run"
+  },
+  "keywords": [
+    "elevenlabs",
+    "ai",
+    "agents",
+    "cli"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.34.0",
+    "chalk": "^5.6.2",
+    "commander": "^14.0.3",
+    "dotenv": "^17.2.4",
+    "inquirer": "^13.2.2"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.9",
+    "@types/node": "^25.2.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "name": "FAQ Knowledge - Warranty & Maintenance",
+  "description": "Caller asks about warranty validity, maintenance frequency, and tune-up details from KB",
+  "simulation_specification": {
+    "simulated_user_config": {
+      "prompt": {
+        "prompt": "You are a homeowner calling Lindsay's Air Conditioning & Plumbing with questions about your HVAC system maintenance and warranty. Ask these questions one at a time, waiting for the agent's response before asking the next:\n1. First: 'I have a question about my warranty. Does my AC warranty require regular maintenance to stay valid?'\n2. After they answer: 'How often should I be getting my system serviced? Like once a year or more?'\n3. After they answer: 'What exactly do they check during a tune-up? I want to know what I'm paying for.'\nBe curious and engaged. If the agent offers to schedule a tune-up, politely say you're just gathering information for now.",
+        "llm": "gpt-4o",
+        "temperature": 0.3
+      }
+    },
+    "tool_mock_config": {
+      "check_availability": {
+        "default_return_value": "{\"available_times\": [\"9:00 AM\", \"11:00 AM\", \"2:00 PM\"]}"
+      },
+      "schedule_appointment": {
+        "default_return_value": "{\"confirmation\": \"APT-99999\", \"status\": \"confirmed\"}"
+      },
+      "submit_callback_request": {
+        "default_return_value": "{\"status\": \"submitted\", \"callback_id\": \"CB-999\"}"
+      }
+    },
+    "dynamic_variables": {}
+  },
+  "extra_evaluation_criteria": [
+    {
+      "id": "warranty_answered",
+      "name": "Warranty Question Answered",
+      "conversation_goal_prompt": "The agent explained that most manufacturers require annual professional maintenance for the warranty to stay valid, or conveyed that regular maintenance is important for warranty coverage. The agent should have given a substantive answer about the warranty-maintenance connection."
+    },
+    {
+      "id": "maintenance_frequency",
+      "name": "Maintenance Frequency Answered",
+      "conversation_goal_prompt": "The agent recommended maintenance twice a year (spring and fall), or at minimum once a year. The key detail is that the agent gave a specific frequency recommendation rather than a vague answer."
+    },
+    {
+      "id": "tuneup_details",
+      "name": "Tune-Up Details Provided",
+      "conversation_goal_prompt": "The agent described what's included in a tune-up, referencing the 26-point inspection, specific checks performed (like refrigerant levels, electrical connections, coils, etc.), or giving meaningful details about what a technician inspects. A generic 'we check everything' is not sufficient."
+    }
+  ],
+  "new_turns_limit": 15
+}

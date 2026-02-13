@@ -1,0 +1,43 @@
+{
+  "name": "Emergency Triage - Gas Smell",
+  "description": "Caller reports gas smell near furnace, agent should transfer to emergency dispatch immediately",
+  "simulation_specification": {
+    "simulated_user_config": {
+      "prompt": {
+        "prompt": "You are a panicked homeowner calling Lindsay's Air Conditioning & Plumbing. You smell gas near your furnace in the basement. You're scared and want help immediately. Start by telling them you smell gas near your furnace. If they ask any questions, keep emphasizing the gas smell and that you're worried. Do not provide scheduling information — you just want someone to help with the gas smell.",
+        "llm": "gpt-4o",
+        "temperature": 0.3
+      }
+    },
+    "tool_mock_config": {
+      "check_availability": {
+        "default_return_value": "{\"available_times\": [\"9:00 AM\", \"11:00 AM\", \"2:00 PM\"]}"
+      },
+      "schedule_appointment": {
+        "default_return_value": "{\"confirmation\": \"APT-99999\", \"status\": \"confirmed\"}"
+      },
+      "submit_callback_request": {
+        "default_return_value": "{\"status\": \"submitted\", \"callback_id\": \"CB-999\"}"
+      }
+    },
+    "dynamic_variables": {}
+  },
+  "extra_evaluation_criteria": [
+    {
+      "id": "emergency_detected",
+      "name": "Emergency Detected",
+      "conversation_goal_prompt": "The agent recognized the gas smell as an emergency situation and did NOT try to schedule a regular appointment. The agent should have treated this as urgent and not proceeded with normal booking flow."
+    },
+    {
+      "id": "transfer_initiated",
+      "name": "Transfer Initiated",
+      "conversation_goal_prompt": "The agent indicated they would transfer the caller to emergency dispatch, an emergency team, or someone who can help immediately. The agent should have used the transfer_to_number tool or clearly stated they are transferring the call."
+    },
+    {
+      "id": "empathy_shown",
+      "name": "Empathy Shown",
+      "conversation_goal_prompt": "The agent acknowledged the situation as an emergency before or while initiating the transfer. This includes statements like 'that sounds like an emergency,' 'let me get you to someone right away,' or similar urgency acknowledgment. Does NOT require emotional empathy — just clear recognition that this is urgent."
+    }
+  ],
+  "new_turns_limit": 10
+}

@@ -1,0 +1,43 @@
+{
+  "name": "Maintenance Tune-Up Booking",
+  "description": "MVP plan member scheduling a spring AC tune-up before summer",
+  "simulation_specification": {
+    "simulated_user_config": {
+      "prompt": {
+        "prompt": "You are a homeowner calling Lindsay's Air Conditioning & Plumbing to schedule your spring AC tune-up before summer hits. You are an existing MVP Maintenance Plan member. When asked, provide:\n- Name: Jennifer Walsh\n- Phone: 770-555-0233\n- Email: jen.walsh@email.com\n- Address: 7890 Johnson Ferry Road, Dunwoody, Georgia\n- You want both your AC units checked (you have 2 units)\n- You've been an MVP member for 2 years\nBe friendly and cooperative. If offered time slots, pick the first morning option.",
+        "llm": "gpt-4o",
+        "temperature": 0.3
+      }
+    },
+    "tool_mock_config": {
+      "check_availability": {
+        "default_return_value": "{\"available_times\": [\"8:00 AM\", \"10:00 AM\", \"1:00 PM\", \"3:00 PM\"]}"
+      },
+      "schedule_appointment": {
+        "default_return_value": "{\"confirmation\": \"APT-23456\", \"status\": \"confirmed\"}"
+      },
+      "submit_callback_request": {
+        "default_return_value": "{\"status\": \"submitted\", \"callback_id\": \"CB-002\"}"
+      }
+    },
+    "dynamic_variables": {}
+  },
+  "extra_evaluation_criteria": [
+    {
+      "id": "service_type_correct",
+      "name": "Service Type Correct",
+      "conversation_goal_prompt": "The agent categorized this service as 'Maintenance Tune-Up' or equivalent when booking. The caller explicitly asked for a spring AC tune-up, which maps to the maintenance category."
+    },
+    {
+      "id": "mvp_acknowledged",
+      "name": "MVP Plan Acknowledged",
+      "conversation_goal_prompt": "The agent acknowledged the caller's MVP Maintenance Plan membership in some way — either by asking about it, confirming it, or referencing it during the conversation."
+    },
+    {
+      "id": "appointment_booked",
+      "name": "Appointment Booked",
+      "conversation_goal_prompt": "The agent successfully booked the appointment by calling the schedule_appointment tool and confirmed the appointment details to the caller."
+    }
+  ],
+  "new_turns_limit": 20
+}

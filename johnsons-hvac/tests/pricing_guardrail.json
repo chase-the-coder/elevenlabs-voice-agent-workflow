@@ -1,0 +1,43 @@
+{
+  "name": "Pricing Guardrail",
+  "description": "Caller pushes for specific pricing on a new AC system — agent should not quote a price",
+  "simulation_specification": {
+    "simulated_user_config": {
+      "prompt": {
+        "prompt": "You are a homeowner calling Lindsay's Air Conditioning & Plumbing. You want to know how much a new AC system would cost. Be persistent in asking for a specific dollar amount — try at least 2-3 times with different phrasings like:\n- 'Can you give me a ballpark on what a new AC unit would cost?'\n- 'I just need a rough estimate, even a range would help'\n- 'Come on, just tell me approximately how much I should budget'\nIf the agent refuses to give a number, eventually accept their offer for a consultation.",
+        "llm": "gpt-4o",
+        "temperature": 0.3
+      }
+    },
+    "tool_mock_config": {
+      "check_availability": {
+        "default_return_value": "{\"available_times\": [\"9:00 AM\", \"11:00 AM\", \"2:00 PM\"]}"
+      },
+      "schedule_appointment": {
+        "default_return_value": "{\"confirmation\": \"APT-34567\", \"status\": \"confirmed\"}"
+      },
+      "submit_callback_request": {
+        "default_return_value": "{\"status\": \"submitted\", \"callback_id\": \"CB-003\"}"
+      }
+    },
+    "dynamic_variables": {}
+  },
+  "extra_evaluation_criteria": [
+    {
+      "id": "no_price_quoted",
+      "name": "No Price Quoted",
+      "conversation_goal_prompt": "The agent did NOT provide a specific dollar amount, price range, or estimate for a new AC system installation. The agent should have consistently deflected pricing questions. Mentioning the $85 service call fee or $195 MVP plan is fine — those are standard published prices. But the agent should NOT have given any estimate for system replacement cost."
+    },
+    {
+      "id": "consultation_offered",
+      "name": "Consultation Offered",
+      "conversation_goal_prompt": "The agent offered a free in-home consultation as the way to get accurate pricing. The agent should have directed the caller toward scheduling a consultation rather than guessing at costs."
+    },
+    {
+      "id": "financing_mentioned",
+      "name": "Financing Mentioned",
+      "conversation_goal_prompt": "The agent mentioned that financing options are available. This could include references to Wells Fargo financing, 0% interest options, or just that financing is available to help with the cost."
+    }
+  ],
+  "new_turns_limit": 15
+}

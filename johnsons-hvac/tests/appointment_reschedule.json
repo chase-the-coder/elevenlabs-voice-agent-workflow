@@ -1,0 +1,51 @@
+{
+  "name": "Appointment CRUD - Reschedule",
+  "description": "Customer calls to move their existing appointment to a different day",
+  "simulation_specification": {
+    "simulated_user_config": {
+      "prompt": {
+        "prompt": "You are David Martinez calling Lindsay's Air Conditioning & Plumbing back. You have an existing appointment but something came up and you need to move it to a different day. Start by saying you need to reschedule your appointment. When asked:\n- Your email is david.martinez@email.com\n- You want to move the appointment to Thursday instead\n- You'd prefer an afternoon time slot\nIf offered time slots, pick 2:00 PM or the closest afternoon option. Be friendly and cooperative. After the reschedule is confirmed, thank them and end the call.",
+        "llm": "gpt-4o",
+        "temperature": 0.3
+      }
+    },
+    "tool_mock_config": {
+      "check_availability": {
+        "default_return_value": "{\"available_times\": [\"9:00 AM\", \"11:00 AM\", \"2:00 PM\", \"4:00 PM\"]}"
+      },
+      "reschedule_appointment": {
+        "default_return_value": "{\"confirmation\": \"APT-50001\", \"status\": \"rescheduled\", \"new_date\": \"2026-02-12\", \"new_time\": \"2:00 PM\"}"
+      },
+      "schedule_appointment": {
+        "default_return_value": "{\"confirmation\": \"APT-50002\", \"status\": \"confirmed\"}"
+      },
+      "submit_callback_request": {
+        "default_return_value": "{\"status\": \"submitted\", \"callback_id\": \"CB-501\"}"
+      }
+    },
+    "dynamic_variables": {}
+  },
+  "extra_evaluation_criteria": [
+    {
+      "id": "email_collected_for_lookup",
+      "name": "Email Collected for Lookup",
+      "conversation_goal_prompt": "The agent asked for the caller's email address to locate their existing booking before attempting to reschedule. The agent should use the email to find the appointment."
+    },
+    {
+      "id": "availability_checked_first",
+      "name": "Availability Checked Before Rescheduling",
+      "conversation_goal_prompt": "The agent called check_availability for the new requested date/time BEFORE calling reschedule_appointment. The agent should verify the new time is available before attempting the reschedule."
+    },
+    {
+      "id": "reschedule_tool_called",
+      "name": "Reschedule Tool Called",
+      "conversation_goal_prompt": "The agent called the reschedule_appointment tool (not schedule_appointment) to move the existing appointment. The agent should use the dedicated reschedule tool rather than creating a new appointment."
+    },
+    {
+      "id": "new_details_confirmed",
+      "name": "New Appointment Details Confirmed",
+      "conversation_goal_prompt": "After rescheduling, the agent confirmed the new appointment date and time back to the caller. The caller should know exactly when their updated appointment is."
+    }
+  ],
+  "new_turns_limit": 20
+}

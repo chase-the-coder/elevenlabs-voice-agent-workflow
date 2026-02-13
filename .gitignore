@@ -1,0 +1,17 @@
+# Environment
+.env
+.DS_Store
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Test results (generated)
+**/tests/results/*.json
+
+# IDE
+.vscode/
+.idea/
+*.swp

@@ -1,0 +1,48 @@
+{
+  "name": "Appointment CRUD - Create",
+  "description": "Customer calls to schedule a new AC repair appointment, providing all required information",
+  "simulation_specification": {
+    "simulated_user_config": {
+      "prompt": {
+        "prompt": "You are a homeowner in Atlanta calling Lindsay's Air Conditioning & Plumbing to schedule an AC repair. Your AC is making a loud rattling noise and not cooling well. When asked, provide your information one piece at a time:\n- Name: David Martinez\n- Phone: 404-555-0319\n- Email: david.martinez@email.com\n- Address: 2845 Roswell Road NE, Atlanta, Georgia\n- The rattling started 3 days ago and has gotten louder\n- You think it's a central AC unit, about 10 years old\nYou'd prefer a morning appointment. If offered time slots, pick the earliest morning option. Be cooperative and straightforward. After the appointment is confirmed, thank them and end the call.",
+        "llm": "gpt-4o",
+        "temperature": 0.3
+      }
+    },
+    "tool_mock_config": {
+      "check_availability": {
+        "default_return_value": "{\"available_times\": [\"8:00 AM\", \"10:00 AM\", \"1:00 PM\", \"3:00 PM\"]}"
+      },
+      "schedule_appointment": {
+        "default_return_value": "{\"confirmation\": \"APT-50001\", \"status\": \"confirmed\", \"date\": \"2026-02-10\", \"time\": \"8:00 AM\"}"
+      },
+      "submit_callback_request": {
+        "default_return_value": "{\"status\": \"submitted\", \"callback_id\": \"CB-500\"}"
+      }
+    },
+    "dynamic_variables": {}
+  },
+  "extra_evaluation_criteria": [
+    {
+      "id": "availability_checked",
+      "name": "Availability Checked First",
+      "conversation_goal_prompt": "The agent called the check_availability tool BEFORE calling schedule_appointment. The agent should always check what times are open before trying to book."
+    },
+    {
+      "id": "all_fields_collected",
+      "name": "All Required Fields Collected",
+      "conversation_goal_prompt": "The agent collected all required fields before booking: customer name (David Martinez), phone number (404-555-0319), email (david.martinez@email.com), and service address (2845 Roswell Road NE, Atlanta). Each piece should have been collected one at a time."
+    },
+    {
+      "id": "schedule_tool_called",
+      "name": "Schedule Tool Called",
+      "conversation_goal_prompt": "The agent called the schedule_appointment tool to formally book the appointment. The agent should not have just verbally confirmed — the tool must have been invoked."
+    },
+    {
+      "id": "confirmation_relayed",
+      "name": "Confirmation Details Relayed",
+      "conversation_goal_prompt": "After booking, the agent confirmed the appointment details back to the caller, including the time and/or confirmation number. The caller should have been left with a clear understanding of when their appointment is."
+    }
+  ],
+  "new_turns_limit": 25
+}

@@ -1,0 +1,43 @@
+{
+  "name": "Plumbing Savannah Rejection",
+  "description": "Savannah resident requesting plumbing service — should be declined with alternative offered",
+  "simulation_specification": {
+    "simulated_user_config": {
+      "prompt": {
+        "prompt": "You are a Savannah, Georgia resident calling Lindsay's Air Conditioning & Plumbing. You have a leaking kitchen faucet that's been dripping for a week and getting worse. Start by saying you're in Savannah and need someone to fix a leaking faucet. If told plumbing isn't available in Savannah, express mild disappointment but ask if there's anything else they can help with. You don't currently have any HVAC needs.",
+        "llm": "gpt-4o",
+        "temperature": 0.3
+      }
+    },
+    "tool_mock_config": {
+      "check_availability": {
+        "default_return_value": "{\"available_times\": [\"9:00 AM\", \"11:00 AM\", \"2:00 PM\"]}"
+      },
+      "schedule_appointment": {
+        "default_return_value": "{\"confirmation\": \"APT-99999\", \"status\": \"confirmed\"}"
+      },
+      "submit_callback_request": {
+        "default_return_value": "{\"status\": \"submitted\", \"callback_id\": \"CB-999\"}"
+      }
+    },
+    "dynamic_variables": {}
+  },
+  "extra_evaluation_criteria": [
+    {
+      "id": "plumbing_rejected",
+      "name": "Plumbing Rejected",
+      "conversation_goal_prompt": "The agent informed the caller that plumbing service is not available in Savannah. The agent should have clearly stated that plumbing is only available in the Atlanta metro area."
+    },
+    {
+      "id": "alternative_offered",
+      "name": "Alternative Offered",
+      "conversation_goal_prompt": "The agent offered an alternative — either mentioning they can help with HVAC/air conditioning needs in Savannah, or suggesting the caller find a local Savannah plumber. The agent should not have just said 'no' and ended the conversation."
+    },
+    {
+      "id": "did_not_schedule",
+      "name": "Did Not Schedule Plumbing",
+      "conversation_goal_prompt": "The agent did NOT attempt to schedule a plumbing appointment for a Savannah address. The schedule_appointment tool should not have been called for plumbing service outside Atlanta metro."
+    }
+  ],
+  "new_turns_limit": 12
+}
