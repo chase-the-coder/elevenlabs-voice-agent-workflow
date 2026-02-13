@@ -53,35 +53,81 @@ Claude Code will automatically read CLAUDE.md and understand the project convent
 
 ## The Workflow
 
-This project uses a structured workflow powered by Claude Code slash commands. Here's the typical flow:
+This project uses a structured workflow powered by Claude Code slash commands. Here's the typical flow for building or modifying an agent:
 
 ### `/prime` — Orient yourself
-Run this at the start of every session. It reads the project structure, checks git state, and lists recent handoffs so Claude understands what's going on.
+Run this at the start of every new Claude Code session. Claude reads the project structure, checks your current git branch, lists all agents, and checks for any session handoffs from previous work. This gives Claude full context before you ask it to do anything.
 
 ### `/plan <description>` — Design before building
-Describe what you want to change. Claude will analyze the codebase, design an approach, and save a detailed plan to `specs/todo/`. Plans include file changes, token budget impact, test strategy, and rollback steps.
+Describe what you want in plain English. Claude will:
+- Read the existing agent files (prompt, config, KB, tools) to understand the baseline
+- Consult the ElevenLabs documentation (bundled locally via the `/elevenlabs-docs` skill — no web fetching needed) for best practices on prompting, tool configuration, and knowledge base setup
+- Design an implementation approach following the conventions in CLAUDE.md (prompt structure, token budgets, latency optimization)
+- Save a detailed plan to `specs/todo/` with step-by-step file changes, token budget impact, and rollback steps
 
 **Example:** `/plan Add a new dental office agent with appointment booking and insurance verification`
 
 ### `/build [path-to-plan]` — Execute the plan
-Implements the changes specified in a plan file. Creates a git branch, makes the changes, commits, and asks whether to push to ElevenLabs Main or a new branch.
+Takes a plan from `specs/todo/` and implements it step by step:
+1. Creates a **local git branch** for the changes
+2. Generates or modifies the system prompt, knowledge base, tool definitions, and agent config
+3. Commits all changes locally
+4. **Asks you** whether to push to ElevenLabs Main (production) or create a new ElevenLabs branch for A/B testing
+
+This two-layer approach (local git + ElevenLabs branches) means you always have version control locally, and you can safely test changes on ElevenLabs by splitting traffic between branches before merging to Main.
 
 ### `/review [spec-file]` — Verify the implementation
-Compares what was built against the original spec. Checks prompt word count, convention compliance, and ElevenLabs push state. Reports issues as skippable, tech_debt, or blocker.
+Compares what was actually built against the original plan to catch mistakes before going live:
+- Checks every requirement in the spec against the implementation
+- Verifies prompt word count is within budget (400-600 words)
+- Verifies KB word count is within budget (300-500 words)
+- Confirms prompt follows the required section order (Personality > Goal > Guardrails > Character Normalization > Tools > Error Handling)
+- Checks that webhook tools have `forcePreToolSpeech: true` and `toolCallSoundBehavior: "always"` for latency optimization
+- Verifies tool naming conventions (snake_case) and that all tools are attached to the agent config
+- Reports issues by severity: **skippable** (cosmetic), **tech_debt** (works but needs cleanup), or **blocker** (must fix before pushing)
 
 ### `/test <agent-key>` — Run the test suite
-Runs simulated conversations against your agent multiple times, aggregates results, and presents a summary table with PASS/FLAKY/FAIL classification. Tests are auto-generated from your agent's prompt and tools if they don't exist yet.
+Runs simulated phone conversations against your agent using ElevenLabs' simulation API:
+1. **Auto-generates tests** if none exist — analyzes your agent's prompt, KB, and tools to create 8-15 test scenarios covering happy paths, guardrails, emergency handling, edge cases, and tool failures
+2. **Runs N simulations** (default 5) in parallel — each test is a full conversation between a simulated caller and your agent
+3. **Aggregates results** across runs and classifies each test as:
+   - **PASS** — 100% pass rate across all runs
+   - **FLAKY** — 34-99% pass rate (non-deterministic behavior)
+   - **FAIL** — 0-33% pass rate (consistent failure)
+4. **Provides actionable suggestions** — for failing tests, it identifies which prompt section needs reinforcement and what to change
 
 **Example:** `/test johnson-hvac --runs 5`
+
+Tests use mocked tool responses (no real webhooks are called during testing), so you can run them without any backend infrastructure connected.
+
+### `/elevenlabs-docs` — Access documentation instantly
+Provides the full ElevenLabs developer documentation for conversational AI agents without needing to fetch anything from the web. Includes pre-fetched references for:
+- **Prompting guide** — prompt structure, emphasis patterns, character normalization
+- **Server tools** — webhook tool JSON schema, auth methods, request body configuration
+- **Knowledge base** — KB modes (prompt/auto/rag), RAG indexing, document types
+- **Agent configuration** — full config schema for conversation settings, TTS, ASR, turn-taking
+- **Outbound calls** — Twilio integration, dynamic variables, batch calls
+
+Claude automatically consults these docs when building or modifying agents via `/plan` and `/build`.
 
 ### Other commands
 
 | Command | Purpose |
 |---------|---------|
 | `/commit` | Create a git commit with a descriptive message |
-| `/handoff` | Save session state for seamless continuation later |
-| `/pickup` | Resume from a previous session handoff |
-| `/elevenlabs-docs` | Access ElevenLabs documentation instantly |
+| `/handoff` | Save session state (current work, decisions made, next steps) so you can close the session and pick up later |
+| `/pickup` | Resume from a previous handoff — Claude reads the saved state and continues where you left off |
+
+## How Changes Get to ElevenLabs
+
+There are two layers of version control in this workflow:
+
+1. **Local git** — All changes are committed to git branches first. This gives you full history, diffs, and the ability to revert.
+2. **ElevenLabs branches** — ElevenLabs has its own branching system for A/B testing. You can split traffic (e.g., 90% Main / 10% experiment) to safely test changes before merging.
+
+The `/build` command always asks before pushing to ElevenLabs. Your options:
+- **Push to Main** — Changes go live immediately
+- **Create a new ElevenLabs branch** — Changes are deployed to a branch. You can then use `npm run branches:deploy` to split traffic and test, then `npm run branches:merge` to promote to Main when satisfied
 
 ## CLI Reference
 
@@ -125,13 +171,42 @@ npm run tests:run <agent-key>                 # Run test suite
 
 ## Creating a New Agent
 
-1. Run `/plan Add a new [business type] agent with [capabilities]`
-2. Run `/build` to execute the plan
-3. Run `/review` to verify against the spec
-4. Run `/test <agent-key>` to validate behavior
-5. Iterate on any FAIL or FLAKY results
+### End-to-end example
 
-The plan will automatically follow the conventions in CLAUDE.md: concise prompts (400-600 words), lean KBs (300-500 words), proper tool naming, latency optimization settings, and character normalization.
+```
+You:    /plan Add a new dental office agent with appointment booking and insurance verification
+Claude: [reads existing agents for patterns, consults ElevenLabs docs, writes plan to specs/todo/]
+        Plan saved. Ready to build?
+
+You:    /build
+Claude: [creates git branch, generates prompt + KB + tools + config, commits]
+        Push to ElevenLabs Main, or create a new branch?
+
+You:    Create a branch called "dental-v1"
+Claude: [pushes to ElevenLabs branch "dental-v1"]
+        Done. Run /review to verify, or /test to run simulations.
+
+You:    /test dental-office --runs 5
+Claude: [generates 12 test scenarios, runs 5x each in parallel, aggregates results]
+        Results: 10 PASS, 1 FLAKY, 1 FAIL
+        FAIL: insurance_verification — agent not confirming policy number before tool call
+        Suggestion: Add emphasis in Tools section...
+
+You:    Fix the failing test
+Claude: [updates prompt, commits, asks about ElevenLabs push]
+```
+
+### What happens at each step
+
+1. **`/plan`** — Claude reads the ElevenLabs prompting guide (bundled locally), studies the example agent (Johnson's HVAC) for patterns, and designs the full agent: system prompt, knowledge base, tool definitions, and config. The plan is saved to `specs/todo/` for your approval before any files are created.
+
+2. **`/build`** — Executes the approved plan. Creates the agent folder with all files following the naming conventions (`11labs-system-prompt-<agent>.md`, `11labs-kb-<agent>.md`, etc.). Registers the agent in `elevenlabs-manager/config.json`. Commits to a git branch and asks before pushing anything to ElevenLabs.
+
+3. **`/review`** — Compares the implementation against the original plan. Catches issues like prompts that are too long (adds latency), missing tool configurations, or convention violations. Reports each issue with a severity level so you know what to fix before going live.
+
+4. **`/test`** — Auto-generates test scenarios based on your agent's prompt and tools (guardrail tests, happy paths, error handling, edge cases). Runs each test multiple times to distinguish real failures from LLM non-determinism. A test that fails 2 out of 5 runs is marked FLAKY — meaning the prompt instruction exists but isn't strong enough.
+
+5. **Iterate** — Fix any FAIL or FLAKY tests by strengthening prompt instructions (e.g., adding "This step is important" emphasis), then re-test until stable.
 
 ## Project Structure
 
