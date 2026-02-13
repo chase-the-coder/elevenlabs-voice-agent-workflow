@@ -299,6 +299,96 @@ Claude Code also has its own permission system. The first time Claude tries to r
 ### Why this matters
 If you're new to Claude Code: this project gives Claude a lot of context about ElevenLabs best practices and your agent architecture. It doesn't give Claude any access beyond what the CLI tool already provides — Claude is just running the same `npm run` commands you would run manually, but it knows when and how to use them because of the instructions in CLAUDE.md and the slash commands.
 
+## Recommended MCP Servers (Optional)
+
+MCP (Model Context Protocol) servers give Claude Code additional capabilities beyond the built-in CLI. These are optional but recommended for the full workflow. Configure them globally in `~/.claude/mcp.json` or per-project in `.mcp.json`.
+
+### ElevenLabs MCP
+
+Gives Claude direct access to ElevenLabs API capabilities (voice generation, audio tools, etc.) beyond what the CLI provides.
+
+```json
+{
+  "mcpServers": {
+    "ElevenLabs": {
+      "command": "uvx",
+      "args": ["elevenlabs-mcp"],
+      "env": {
+        "ELEVENLABS_API_KEY": "your_elevenlabs_api_key"
+      }
+    }
+  }
+}
+```
+
+**Requires:** [uv](https://docs.astral.sh/uv/) installed (`brew install uv` on macOS, or `pip install uv`)
+
+### n8n MCP (Documentation + Workflow Management)
+
+Gives Claude access to n8n node documentation and the ability to create/manage n8n workflows. This is what powers the webhook tools that ElevenLabs agents call during conversations (scheduling, callbacks, etc.).
+
+```json
+{
+  "mcpServers": {
+    "n8n-mcp": {
+      "command": "npx",
+      "args": ["n8n-mcp"],
+      "env": {
+        "MCP_MODE": "stdio",
+        "LOG_LEVEL": "error",
+        "DISABLE_CONSOLE_OUTPUT": "true",
+        "N8N_API_URL": "https://your-n8n-instance.com",
+        "N8N_API_KEY": "your_n8n_api_key"
+      }
+    }
+  }
+}
+```
+
+Without `N8N_API_URL` and `N8N_API_KEY`, the MCP still works for documentation access — Claude can look up n8n node details and help you design workflows. Add the URL and key to let Claude also create and manage workflows on your n8n instance.
+
+**Source:** [github.com/czlonkowski/n8n-mcp](https://github.com/czlonkowski/n8n-mcp)
+
+### n8n Instance MCP (Built-in n8n MCP Server)
+
+n8n Cloud and self-hosted n8n instances (v1.x+) have a built-in MCP server endpoint. This connects Claude directly to your n8n instance for workflow execution and management. Uses [supergateway](https://github.com/nicobailey/supergateway) to bridge n8n's Streamable HTTP transport to stdio.
+
+```json
+{
+  "mcpServers": {
+    "n8n-instance": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "supergateway",
+        "--streamableHttp",
+        "https://your-n8n-instance.com/mcp-server/http",
+        "--header",
+        "authorization:Bearer your_n8n_mcp_api_key"
+      ]
+    }
+  }
+}
+```
+
+To generate the API key: in your n8n instance, go to **Settings > API > Create API Key**, and select the **MCP Server API** scope.
+
+### Combining MCP configs
+
+You can include all servers in a single `~/.claude/mcp.json` file:
+
+```json
+{
+  "mcpServers": {
+    "ElevenLabs": { ... },
+    "n8n-mcp": { ... },
+    "n8n-instance": { ... }
+  }
+}
+```
+
+Or add them per-project in a `.mcp.json` file at the project root (same format). Per-project configs are merged with your global config.
+
 ## Key Conventions
 
 These are enforced by CLAUDE.md and the review command:
