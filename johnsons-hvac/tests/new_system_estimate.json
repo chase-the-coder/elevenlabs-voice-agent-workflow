@@ -4,7 +4,7 @@
   "simulation_specification": {
     "simulated_user_config": {
       "prompt": {
-        "prompt": "You are a homeowner calling Lindsay's Air Conditioning & Plumbing. Your AC system is 20 years old and has been breaking down frequently — you've had 3 repairs in the last year. You're thinking it might be time to replace the whole system. You want to discuss your options and schedule someone to come out and give you an estimate. When asked, provide:\n- Name: Patricia Nguyen\n- Phone: 770-555-0412\n- Email: patricia.nguyen@email.com\n- Address: 9012 Mount Vernon Highway, Sandy Springs, Georgia\nBe open to suggestions and cooperative with scheduling. Pick the afternoon time slot if offered options.",
+        "prompt": "You are a homeowner calling Johnson's Air Conditioning & Plumbing. Your AC system is 20 years old and has been breaking down frequently — you've had 3 repairs in the last year. You're thinking it might be time to replace the whole system. You want to discuss your options and schedule someone to come out and give you an estimate. When asked, provide:\n- Name: Patricia Nguyen\n- Phone: 770-555-0412\n- Email: patricia.nguyen@email.com\n- Address: 9012 Mount Vernon Highway, Sandy Springs, Georgia\nBe open to suggestions and cooperative with scheduling. Pick the afternoon time slot if offered options.",
         "llm": "gpt-4o",
         "temperature": 0.3
       }

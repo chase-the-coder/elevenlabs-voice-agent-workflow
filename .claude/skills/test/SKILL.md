@@ -12,7 +12,7 @@ Run simulated conversation tests against an ElevenLabs agent, aggregate results 
 ## Arguments
 
 Parse `$ARGUMENTS` for:
-- **agent-key** (required) — the agent key (e.g. `prestige-realty`, `lindsay-hvac`)
+- **agent-key** (required) — the agent key (e.g. `johnson-hvac`, `lindsay-hvac`)
 - **--regen** (optional) — force regeneration of test files even if they exist
 - **--runs N** (optional) — number of test runs, default 5
 
@@ -21,12 +21,12 @@ If no agent-key is provided, list available agents from config and ask the user 
 ## Step 1: Resolve Agent
 
 Read `elevenlabs-manager/config.json` and look up the agent-key in the `agents` map. Extract:
-- `folder` — relative path to agent directory (e.g. `../prestige-realty`)
+- `folder` — relative path to agent directory (e.g. `../johnson-hvac`)
 - `agent_id` — the ElevenLabs agent ID
 - `files.system_prompt` — prompt filename
 - `files.knowledge_base` — KB filename (may not exist on disk)
 
-Convert the relative folder to an absolute path from the project root. For example, if config says `"folder": "../prestige-realty"`, the agent folder is `prestige-realty/` at the project root.
+Convert the relative folder to an absolute path from the project root. For example, if config says `"folder": "../johnson-hvac"`, the agent folder is `johnson-hvac/` at the project root.
 
 If the agent-key is not found, show available keys and exit.
 

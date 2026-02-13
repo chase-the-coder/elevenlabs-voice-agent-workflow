@@ -4,7 +4,7 @@
   "simulation_specification": {
     "simulated_user_config": {
       "prompt": {
-        "prompt": "You are David Martinez calling Lindsay's Air Conditioning & Plumbing back. You have an existing appointment but something came up and you need to move it to a different day. Start by saying you need to reschedule your appointment. When asked:\n- Your email is david.martinez@email.com\n- You want to move the appointment to Thursday instead\n- You'd prefer an afternoon time slot\nIf offered time slots, pick 2:00 PM or the closest afternoon option. Be friendly and cooperative. After the reschedule is confirmed, thank them and end the call.",
+        "prompt": "You are David Martinez calling Johnson's Air Conditioning & Plumbing back. You have an existing appointment but something came up and you need to move it to a different day. Start by saying you need to reschedule your appointment. When asked:\n- Your email is david.martinez@email.com\n- You want to move the appointment to Thursday instead\n- You'd prefer an afternoon time slot\nIf offered time slots, pick 2:00 PM or the closest afternoon option. Be friendly and cooperative. After the reschedule is confirmed, thank them and end the call.",
         "llm": "gpt-4o",
         "temperature": 0.3
       }

@@ -187,7 +187,7 @@ Creates a new branch from the latest version on Main. Interactive wizard prompts
 
 Example:
 ```bash
-npm run branches:create ian-test experiment-gpt4
+npm run branches:create johnson-hvac experiment-gpt4
 ```
 
 #### Push to a specific branch
@@ -199,7 +199,7 @@ Pushes local changes to a specific branch instead of Main.
 
 Example:
 ```bash
-npm run agents:push ian-test --branch experiment-gpt4
+npm run agents:push johnson-hvac --branch experiment-gpt4
 ```
 
 #### Deploy traffic across branches
@@ -226,27 +226,27 @@ Merges a branch back to Main and optionally archives it. Traffic automatically t
 
 1. **Enable versioning** (one-time):
    ```bash
-   npm run versioning:enable ian-test
+   npm run versioning:enable johnson-hvac
    ```
 
 2. **Create experiment branch**:
    ```bash
-   npm run branches:create ian-test experiment-better-prompts
+   npm run branches:create johnson-hvac experiment-better-prompts
    ```
 
 3. **Make local changes**:
    ```bash
-   # Edit ian-test/11labs-system-prompt.md
+   # Edit johnson-hvac/11labs-system-prompt.md
    ```
 
 4. **Push to experiment branch**:
    ```bash
-   npm run agents:push ian-test --branch experiment-better-prompts
+   npm run agents:push johnson-hvac --branch experiment-better-prompts
    ```
 
 5. **Deploy 10% traffic to test**:
    ```bash
-   npm run branches:deploy ian-test
+   npm run branches:deploy johnson-hvac
    # Set: Main=90%, experiment-better-prompts=10%
    ```
 
@@ -254,13 +254,13 @@ Merges a branch back to Main and optionally archives it. Traffic automatically t
 
 7. **If successful, increase traffic**:
    ```bash
-   npm run branches:deploy ian-test
+   npm run branches:deploy johnson-hvac
    # Set: Main=50%, experiment-better-prompts=50%
    ```
 
 8. **Merge to main when confident**:
    ```bash
-   npm run branches:merge ian-test experiment-better-prompts
+   npm run branches:merge johnson-hvac experiment-better-prompts
    ```
 
 ### Update an agent's system prompt

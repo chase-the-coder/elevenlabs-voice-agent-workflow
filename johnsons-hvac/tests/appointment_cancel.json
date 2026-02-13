@@ -4,7 +4,7 @@
   "simulation_specification": {
     "simulated_user_config": {
       "prompt": {
-        "prompt": "You are David Martinez calling Lindsay's Air Conditioning & Plumbing. You need to cancel your upcoming appointment because you're going to be out of town and you've decided to go with a different company. Start by saying you need to cancel your appointment. When asked:\n- Your email is david.martinez@email.com\n- Reason for cancellation: you'll be out of town and decided to use a different service provider\nIf the agent offers to reschedule instead, politely decline and say you'd like to go ahead with the cancellation. Be firm but polite. After the cancellation is confirmed, thank them and end the call.",
+        "prompt": "You are David Martinez calling Johnson's Air Conditioning & Plumbing. You need to cancel your upcoming appointment because you're going to be out of town and you've decided to go with a different company. Start by saying you need to cancel your appointment. When asked:\n- Your email is david.martinez@email.com\n- Reason for cancellation: you'll be out of town and decided to use a different service provider\nIf the agent offers to reschedule instead, politely decline and say you'd like to go ahead with the cancellation. Be firm but polite. After the cancellation is confirmed, thank them and end the call.",
         "llm": "gpt-4o",
         "temperature": 0.3
       }

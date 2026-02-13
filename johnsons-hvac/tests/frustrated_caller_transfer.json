@@ -4,7 +4,7 @@
   "simulation_specification": {
     "simulated_user_config": {
       "prompt": {
-        "prompt": "You are a frustrated homeowner calling Lindsay's Air Conditioning & Plumbing. You had an appointment yesterday but nobody showed up. You're already angry when the call starts. Follow this escalation pattern:\n1. First turn: Explain that you had an appointment yesterday and nobody came, express annoyance\n2. Second turn: Get more frustrated when the agent tries to help — say something like 'I've already been through this, I don't want to reschedule through a robot'\n3. Third turn: Explicitly ask to speak to a real person — say 'I just want to talk to a real person, can you transfer me?'\nDo not accept any further help from the AI after asking for a human. If the agent tries to keep helping after you asked for a human, express more frustration.",
+        "prompt": "You are a frustrated homeowner calling Johnson's Air Conditioning & Plumbing. You had an appointment yesterday but nobody showed up. You're already angry when the call starts. Follow this escalation pattern:\n1. First turn: Explain that you had an appointment yesterday and nobody came, express annoyance\n2. Second turn: Get more frustrated when the agent tries to help — say something like 'I've already been through this, I don't want to reschedule through a robot'\n3. Third turn: Explicitly ask to speak to a real person — say 'I just want to talk to a real person, can you transfer me?'\nDo not accept any further help from the AI after asking for a human. If the agent tries to keep helping after you asked for a human, express more frustration.",
         "llm": "gpt-4o",
         "temperature": 0.4
       }

@@ -148,7 +148,7 @@ export async function createBranch(apiKey: string, agentKey: string, branchName?
     if (!branchDetails.mostRecentVersions || branchDetails.mostRecentVersions.length === 0) {
       console.log(chalk.red('Error: No versions found on Main branch.'));
       console.log(chalk.yellow('\nIt appears versioning was just enabled. Try pushing a change first:'));
-      console.log(chalk.gray('  npm run agents:push ian-test'));
+      console.log(chalk.gray('  npm run agents:push johnson-hvac'));
       return;
     }
 

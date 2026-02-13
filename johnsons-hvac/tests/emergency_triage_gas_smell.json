@@ -4,7 +4,7 @@
   "simulation_specification": {
     "simulated_user_config": {
       "prompt": {
-        "prompt": "You are a panicked homeowner calling Lindsay's Air Conditioning & Plumbing. You smell gas near your furnace in the basement. You're scared and want help immediately. Start by telling them you smell gas near your furnace. If they ask any questions, keep emphasizing the gas smell and that you're worried. Do not provide scheduling information — you just want someone to help with the gas smell.",
+        "prompt": "You are a panicked homeowner calling Johnson's Air Conditioning & Plumbing. You smell gas near your furnace in the basement. You're scared and want help immediately. Start by telling them you smell gas near your furnace. If they ask any questions, keep emphasizing the gas smell and that you're worried. Do not provide scheduling information — you just want someone to help with the gas smell.",
         "llm": "gpt-4o",
         "temperature": 0.3
       }

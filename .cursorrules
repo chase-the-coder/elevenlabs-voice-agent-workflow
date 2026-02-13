@@ -52,7 +52,7 @@ When asked to update an agent prompt, follow this sequence:
 ### Step 2: Create Git Branch
 
 ```bash
-cd /Users/chase/Documents/elevenlabs-voice-agent-workflow
+cd /path/to/your/project
 git checkout -b feature/[agent-name]-[brief-description]
 ```
 
@@ -110,7 +110,7 @@ Provide:
 
 ## ElevenLabs Manager Commands
 
-All commands run from `/Users/chase/Documents/elevenlabs-voice-agent-workflow/elevenlabs-manager/`
+All commands run from `/path/to/your/project/elevenlabs-manager/`
 
 ### Agent Commands
 

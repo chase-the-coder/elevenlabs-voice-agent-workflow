@@ -4,7 +4,7 @@
   "simulation_specification": {
     "simulated_user_config": {
       "prompt": {
-        "prompt": "You are a homeowner in Atlanta calling Lindsay's Air Conditioning & Plumbing to schedule an AC repair. Your AC is making a loud rattling noise and not cooling well. When asked, provide your information one piece at a time:\n- Name: David Martinez\n- Phone: 404-555-0319\n- Email: david.martinez@email.com\n- Address: 2845 Roswell Road NE, Atlanta, Georgia\n- The rattling started 3 days ago and has gotten louder\n- You think it's a central AC unit, about 10 years old\nYou'd prefer a morning appointment. If offered time slots, pick the earliest morning option. Be cooperative and straightforward. After the appointment is confirmed, thank them and end the call.",
+        "prompt": "You are a homeowner in Atlanta calling Johnson's Air Conditioning & Plumbing to schedule an AC repair. Your AC is making a loud rattling noise and not cooling well. When asked, provide your information one piece at a time:\n- Name: David Martinez\n- Phone: 404-555-0319\n- Email: david.martinez@email.com\n- Address: 2845 Roswell Road NE, Atlanta, Georgia\n- The rattling started 3 days ago and has gotten louder\n- You think it's a central AC unit, about 10 years old\nYou'd prefer a morning appointment. If offered time slots, pick the earliest morning option. Be cooperative and straightforward. After the appointment is confirmed, thank them and end the call.",
         "llm": "gpt-4o",
         "temperature": 0.3
       }

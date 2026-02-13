@@ -4,7 +4,7 @@
   "simulation_specification": {
     "simulated_user_config": {
       "prompt": {
-        "prompt": "You are a homeowner calling Lindsay's Air Conditioning & Plumbing. You want to know how much a new AC system would cost. Be persistent in asking for a specific dollar amount — try at least 2-3 times with different phrasings like:\n- 'Can you give me a ballpark on what a new AC unit would cost?'\n- 'I just need a rough estimate, even a range would help'\n- 'Come on, just tell me approximately how much I should budget'\nIf the agent refuses to give a number, eventually accept their offer for a consultation.",
+        "prompt": "You are a homeowner calling Johnson's Air Conditioning & Plumbing. You want to know how much a new AC system would cost. Be persistent in asking for a specific dollar amount — try at least 2-3 times with different phrasings like:\n- 'Can you give me a ballpark on what a new AC unit would cost?'\n- 'I just need a rough estimate, even a range would help'\n- 'Come on, just tell me approximately how much I should budget'\nIf the agent refuses to give a number, eventually accept their offer for a consultation.",
         "llm": "gpt-4o",
         "temperature": 0.3
       }

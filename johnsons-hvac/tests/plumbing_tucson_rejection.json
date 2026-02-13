@@ -4,7 +4,7 @@
   "simulation_specification": {
     "simulated_user_config": {
       "prompt": {
-        "prompt": "You are a Savannah, Georgia resident calling Lindsay's Air Conditioning & Plumbing. You have a leaking kitchen faucet that's been dripping for a week and getting worse. Start by saying you're in Savannah and need someone to fix a leaking faucet. If told plumbing isn't available in Savannah, express mild disappointment but ask if there's anything else they can help with. You don't currently have any HVAC needs.",
+        "prompt": "You are a Savannah, Georgia resident calling Johnson's Air Conditioning & Plumbing. You have a leaking kitchen faucet that's been dripping for a week and getting worse. Start by saying you're in Savannah and need someone to fix a leaking faucet. If told plumbing isn't available in Savannah, express mild disappointment but ask if there's anything else they can help with. You don't currently have any HVAC needs.",
         "llm": "gpt-4o",
         "temperature": 0.3
       }

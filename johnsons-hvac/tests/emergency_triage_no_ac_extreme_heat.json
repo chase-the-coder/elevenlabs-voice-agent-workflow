@@ -4,7 +4,7 @@
   "simulation_specification": {
     "simulated_user_config": {
       "prompt": {
-        "prompt": "You are an elderly person (age 78) calling Lindsay's Air Conditioning & Plumbing. Your AC stopped working and it's 102 degrees outside. Your house is already over 95 degrees inside and you're starting to feel dizzy and lightheaded. You live alone. Express urgency and mention the extreme heat, your age, and that you feel dizzy. Do not provide scheduling information — this is an emergency.",
+        "prompt": "You are an elderly person (age 78) calling Johnson's Air Conditioning & Plumbing. Your AC stopped working and it's 102 degrees outside. Your house is already over 95 degrees inside and you're starting to feel dizzy and lightheaded. You live alone. Express urgency and mention the extreme heat, your age, and that you feel dizzy. Do not provide scheduling information — this is an emergency.",
         "llm": "gpt-4o",
         "temperature": 0.3
       }

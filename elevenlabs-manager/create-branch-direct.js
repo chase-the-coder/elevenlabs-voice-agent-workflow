@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Direct branch creation without interactive prompts
- * Usage: npm run branches:create-direct ian-test experiment-v1 "Description here"
+ * Usage: npm run branches:create-direct johnson-hvac experiment-v1 "Description here"
  */
 
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
@@ -12,7 +12,7 @@ const [agentKey, branchName, description] = process.argv.slice(2);
 
 if (!agentKey || !branchName) {
   console.log(chalk.red('Usage: npm run branches:create-direct <agent-key> <branch-name> [description]'));
-  console.log(chalk.gray('Example: npm run branches:create-direct ian-test experiment-v1 "Testing new features"'));
+  console.log(chalk.gray('Example: npm run branches:create-direct johnson-hvac experiment-v1 "Testing new features"'));
   process.exit(1);
 }
 
