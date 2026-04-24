@@ -23,7 +23,7 @@ An opinionated workflow for building and managing ElevenLabs conversational AI a
 ### 1. Clone the template
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/elevenlabs-voice-agent-workflow.git
+git clone https://github.com/chase-the-coder/elevenlabs-voice-agent-workflow.git
 cd elevenlabs-voice-agent-workflow
 ```
 
@@ -415,4 +415,4 @@ These are enforced by CLAUDE.md and the review command:
 
 ## License
 
-ISC
+MIT
