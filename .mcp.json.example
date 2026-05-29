@@ -1,0 +1,34 @@
+{
+  "_comment": "Optional. The elevenlabs-manager CLI works fully WITHOUT any MCP server. Copy this file to .mcp.json and fill in your keys to give Claude Code extra capabilities. Remove any server block you don't want.",
+  "mcpServers": {
+    "ElevenLabs": {
+      "command": "uvx",
+      "args": ["elevenlabs-mcp"],
+      "env": {
+        "ELEVENLABS_API_KEY": "your_elevenlabs_api_key"
+      }
+    },
+    "n8n-mcp": {
+      "command": "npx",
+      "args": ["n8n-mcp"],
+      "env": {
+        "MCP_MODE": "stdio",
+        "LOG_LEVEL": "error",
+        "DISABLE_CONSOLE_OUTPUT": "true",
+        "N8N_API_URL": "https://your-n8n-instance.com",
+        "N8N_API_KEY": "your_n8n_api_key"
+      }
+    },
+    "n8n-instance": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "supergateway",
+        "--streamableHttp",
+        "https://your-n8n-instance.com/mcp-server/http",
+        "--header",
+        "authorization:Bearer your_n8n_mcp_api_key"
+      ]
+    }
+  }
+}

@@ -289,17 +289,14 @@ Using your API key (from `elevenlabs-manager/.env`), Claude can run bash command
 - **Run test simulations** against your live agent via the ElevenLabs API
 
 ### Pre-approved permissions
-This project ships with all permissions pre-approved in `.claude/settings.local.json` so the workflow runs smoothly without constant "approve?" prompts. Out of the box, Claude can:
+This project ships with permissions pre-approved in `.claude/settings.json` (the committed, shared project settings file) so the workflow runs smoothly without constant "approve?" prompts. Because it's committed, every clone gets it automatically — Claude can drive the CLI on the first session, no setup. Out of the box, Claude can:
 - Run all `npm run` commands (the elevenlabs-manager CLI)
 - Run `git` commands (branching, committing, diffing)
 - Run `npx` commands (MCP servers, build tools)
-- Use all ElevenLabs, n8n, and n8n-instance MCP tools
+- Use all ElevenLabs, n8n, and n8n-instance MCP tools (if those servers are configured — see below)
 - Perform basic file operations (`mkdir`, `ls`, `mv`, `cp`)
 
-If you prefer to manually approve each action, ask Claude to clear the permissions:
-```
-Clear all pre-approved permissions in .claude/settings.local.json
-```
+To tighten or loosen this, edit `.claude/settings.json`. Your own machine-local overrides go in `.claude/settings.local.json` (gitignored, never shared).
 
 ### What Claude will NOT do without asking
 Even with permissions pre-approved, the workflow itself has guardrails — Claude will always ask for your confirmation before:
@@ -314,7 +311,15 @@ If you're new to Claude Code: this project gives Claude a lot of context about E
 
 ## Recommended MCP Servers (Optional)
 
-MCP (Model Context Protocol) servers give Claude Code additional capabilities beyond the built-in CLI. These are optional but recommended for the full workflow. Configure them globally in `~/.claude/mcp.json` or per-project in `.mcp.json`.
+MCP (Model Context Protocol) servers give Claude Code additional capabilities beyond the built-in CLI. **They are entirely optional — the elevenlabs-manager CLI does everything (push, pull, tools, KB, branches, tests) over the ElevenLabs SDK/REST without any MCP server.** Add them only if you want the extras below.
+
+The fastest setup: copy the bundled template and fill in your keys (delete any server block you don't need):
+
+```bash
+cp .mcp.json.example .mcp.json
+```
+
+`.mcp.json` is gitignored so your keys never get committed. You can also configure these globally in `~/.claude/mcp.json` instead. The individual server blocks are documented below for reference.
 
 ### ElevenLabs MCP
 
