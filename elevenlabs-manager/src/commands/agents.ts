@@ -170,7 +170,7 @@ export async function pushAgent(apiKey: string, agentKey: string, options?: { br
   console.log(chalk.green(`\n✓ Successfully pushed agent '${agentKey}'`));
   console.log(chalk.gray(`  Updated system prompt from ${localAgent.files.system_prompt}`));
   if (branchId) {
-    console.log(chalk.gray(`  New version created on branch: ${options.branchName}`));
+    console.log(chalk.gray(`  New version created on branch: ${options?.branchName}`));
   }
 }
 

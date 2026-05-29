@@ -375,7 +375,7 @@ npm run dev -- agents list
 
 This CLI is a thin wrapper over the official ElevenLabs TypeScript SDK plus two direct REST calls. Everything lives under the `conversationalAi` namespace of the SDK.
 
-- **SDK:** [`@elevenlabs/elevenlabs-js`](https://github.com/elevenlabs/elevenlabs-js), pinned `^2.34.0` (verified against 2.49.x). The `^` range already pulls the latest 2.x — run `npm update @elevenlabs/elevenlabs-js` to refresh, then `npm run build`.
+- **SDK:** [`@elevenlabs/elevenlabs-js`](https://github.com/elevenlabs/elevenlabs-js), pinned `^2.49.1` (the version the CLI is built and verified against). To move to a newer 2.x, run `npm update @elevenlabs/elevenlabs-js`, then `npm run build` to surface any type changes. Note: the target branch for `agents:push --branch` is sent in the request body (`UpdateAgentRequest.branchId`), and traffic deployment uses `deploymentRequest.requests[].deploymentStrategy`.
 - **Client setup:** `new ElevenLabsClient({ apiKey })` (see `src/client.ts`).
 
 ### Command → API mapping

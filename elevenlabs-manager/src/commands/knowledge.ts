@@ -98,7 +98,7 @@ export async function syncKnowledgeBase(apiKey: string, agentKey: string) {
   // Compute RAG index so semantic search works immediately
   console.log(chalk.blue(`Computing RAG index...`));
   try {
-    const ragModel = agentConfig.conversation_config?.agent?.prompt?.rag?.embeddingModel || 'e5_mistral_7b_instruct';
+    const ragModel = (agentConfig.conversation_config?.agent?.prompt as any)?.rag?.embeddingModel || 'e5_mistral_7b_instruct';
     const ragResponse = await fetch('https://api.elevenlabs.io/v1/convai/knowledge-base/rag-index', {
       method: 'POST',
       headers: { 'xi-api-key': apiKey, 'Content-Type': 'application/json' },

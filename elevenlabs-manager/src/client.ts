@@ -33,17 +33,18 @@ export class ElevenLabsManager {
     agentId: string,
     updates: {
       name?: string;
-      conversationConfig?: Partial<ConversationConfig>;
+      conversationConfig?: any;
       tags?: string[];
       versionDescription?: string;
       enableVersioningIfNotEnabled?: boolean;
     },
     branchId?: string
   ) {
+    // In the current SDK the target branch is part of the request body
+    // (UpdateAgentRequest.branchId), not the request options.
     return await this.client.conversationalAi.agents.update(
       agentId,
-      updates,
-      branchId ? { branchId } : undefined
+      { ...updates, ...(branchId ? { branchId } : {}) } as any
     );
   }
 
@@ -92,7 +93,7 @@ export class ElevenLabsManager {
       description?: string;
     }
   ) {
-    return await this.client.conversationalAi.agents.branches.create(agentId, params);
+    return await this.client.conversationalAi.agents.branches.create(agentId, params as any);
   }
 
   /**
@@ -123,18 +124,15 @@ export class ElevenLabsManager {
       archived?: boolean;
     }
   ) {
-    return await this.client.conversationalAi.agents.branches.update(agentId, branchId, params);
+    return await this.client.conversationalAi.agents.branches.update(agentId, branchId, params as any);
   }
 
   /**
-   * Get current traffic deployment
-   */
-  async getDeployment(agentId: string) {
-    return await this.client.conversationalAi.agents.deployments.get(agentId);
-  }
-
-  /**
-   * Deploy traffic across branches
+   * Deploy traffic across branches.
+   *
+   * Accepts percentages in the 0-100 range (per branch) and maps them to the
+   * SDK's deployment request shape (`deploymentRequest.requests[].deploymentStrategy`
+   * with `trafficPercentage` expressed as a 0-1 fraction).
    */
   async deployTraffic(
     agentId: string,
@@ -142,7 +140,14 @@ export class ElevenLabsManager {
       deployments: Array<{ branchId: string; percentage: number }>;
     }
   ) {
-    return await this.client.conversationalAi.agents.deployments.create(agentId, params);
+    return await this.client.conversationalAi.agents.deployments.create(agentId, {
+      deploymentRequest: {
+        requests: params.deployments.map((d) => ({
+          branchId: d.branchId,
+          deploymentStrategy: { type: 'percentage', trafficPercentage: d.percentage / 100 },
+        })),
+      },
+    } as any);
   }
 
   // ============ Tool Operations ============

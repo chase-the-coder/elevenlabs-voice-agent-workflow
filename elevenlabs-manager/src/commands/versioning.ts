@@ -82,20 +82,7 @@ export async function listBranches(apiKey: string, agentKey: string) {
       console.log();
     }
 
-    // Show current traffic deployment
-    try {
-      const deployment = await client.getDeployment(localAgent.agent_id);
-      if (deployment.deployments && deployment.deployments.length > 0) {
-        console.log(chalk.bold('Traffic deployment:'));
-        for (const deploy of deployment.deployments) {
-          const deployBranch = branches.results.find((b: any) => b.id === deploy.branchId);
-          const branchName = deployBranch ? deployBranch.name : deploy.branchId;
-          console.log(chalk.gray(`  ${branchName}: ${deploy.percentage}%`));
-        }
-      }
-    } catch (error) {
-      // Deployment endpoint might not be available or no deployment set
-    }
+    // Current per-branch traffic is already shown above via branch.currentLivePercentage.
   } catch (error: any) {
     console.log(chalk.red(`Error fetching branches: ${error.message}`));
     console.log(chalk.yellow('\nThis could mean:'));
@@ -271,7 +258,7 @@ export async function deployTraffic(apiKey: string, agentKey: string) {
   console.log(chalk.blue('\nDeployment summary:'));
   deployments.forEach((d) => {
     const branch = activeBranches.find((b: any) => b.id === d.branchId);
-    console.log(chalk.gray(`  ${branch.name}: ${d.percentage}%`));
+    console.log(chalk.gray(`  ${branch?.name ?? d.branchId}: ${d.percentage}%`));
   });
 
   const confirmAnswer = await inquirer.prompt([
@@ -339,6 +326,10 @@ export async function mergeBranch(apiKey: string, agentKey: string, sourceBranch
   }
 
   const mainBranch = branches.results.find((b: any) => b.name === 'Main');
+  if (!mainBranch) {
+    console.log(chalk.red("Main branch not found; cannot merge."));
+    return;
+  }
 
   const archiveAnswer = await inquirer.prompt([
     {
