@@ -46,7 +46,7 @@ The `config.json` file maps ElevenLabs agents to local folders:
 {
   "apiKey": "${ELEVENLABS_API_KEY}",
   "agents": {
-    "johnsons-hvac": {
+    "johnson-hvac": {
       "agent_id": "agent_abc123",
       "name": "Johnson's HVAC Sarah",
       "folder": "../johnsons-hvac",
@@ -81,7 +81,7 @@ Downloads the current agent configuration from ElevenLabs and writes:
 
 Example:
 ```bash
-npm run agents:pull johnsons-hvac
+npm run agents:pull johnson-hvac
 ```
 
 #### Push local changes
@@ -96,7 +96,7 @@ Uploads local changes to ElevenLabs:
 
 Example:
 ```bash
-npm run agents:push johnsons-hvac
+npm run agents:push johnson-hvac
 ```
 
 #### Compare local vs remote
@@ -127,7 +127,7 @@ Interactive wizard to create a new tool. Supports:
 
 Example:
 ```bash
-npm run tools:create johnsons-hvac check_availability
+npm run tools:create johnson-hvac check_availability
 ```
 
 #### Push tools
@@ -148,7 +148,7 @@ Creates or updates the knowledge base from local markdown file and attaches it t
 
 Example:
 ```bash
-npm run kb:sync johnsons-hvac
+npm run kb:sync johnson-hvac
 ```
 
 #### Pull knowledge base
@@ -157,6 +157,25 @@ npm run kb:pull <agent-key>
 ```
 
 Downloads knowledge base content from ElevenLabs (Note: API may have limitations on full content retrieval).
+
+### Test Commands
+
+#### Run an agent test suite
+```bash
+npm run tests:run <agent-key>
+```
+
+Runs every test scenario in the agent's `tests/` folder as simulated conversations (via the ElevenLabs `simulate-conversation` API), then prints a PASS / FLAKY / FAIL summary. Each scenario is a JSON file describing a simulated user and the evaluation criteria. See `johnsons-hvac/tests/` for 10 working examples.
+
+Options:
+- `--verbose` — print the full conversation transcript for each scenario
+- `--test <filename>` — run a single test file instead of the whole suite
+- `--no-save` — do not write results to `tests/results/`
+
+Example:
+```bash
+npm run tests:run johnson-hvac -- --verbose
+```
 
 ### Versioning Commands
 
@@ -265,8 +284,6 @@ Merges a branch back to Main and optionally archives it. Traffic automatically t
 
 ### Update an agent's system prompt
 
-### Update an agent's system prompt
-
 1. Edit the markdown file:
    ```bash
    # Edit ../johnsons-hvac/11labs-johnsons-hvac-system-prompt.md
@@ -274,7 +291,7 @@ Merges a branch back to Main and optionally archives it. Traffic automatically t
 
 2. Push changes to ElevenLabs:
    ```bash
-   npm run agents:push johnsons-hvac
+   npm run agents:push johnson-hvac
    ```
 
 3. Verify in ElevenLabs dashboard
@@ -283,7 +300,7 @@ Merges a branch back to Main and optionally archives it. Traffic automatically t
 
 1. Run the create command:
    ```bash
-   npm run tools:create johnsons-hvac schedule_appointment
+   npm run tools:create johnson-hvac schedule_appointment
    ```
 
 2. Follow the interactive prompts
@@ -295,14 +312,13 @@ Merges a branch back to Main and optionally archives it. Traffic automatically t
 
 4. Push to ElevenLabs:
    ```bash
-   npm run tools:push johnsons-hvac
+   npm run tools:push johnson-hvac
    ```
 
 ### Backup current configuration
 
 ```bash
-npm run agents:pull johnsons-hvac
-npm run agents:pull 
+npm run agents:pull johnson-hvac
 git add .
 git commit -m "Backup agent configs"
 ```
@@ -322,10 +338,10 @@ elevenlabs-voice-agent-workflow/
 │   └── tools/                   # Tool definitions
 │       ├── check_availability.json
 │       └── schedule_appointment.json
-└── /
+└── johnsons-hvac/
     ├── agent-config.json
-    ├── 11labs--system-prompt.md
-    ├── 11labs--kb.md
+    ├── 11labs-johnsons-hvac-system-prompt.md
+    ├── 11labs-johnsons-hvac-kb.md
     └── tools/
 ```
 
@@ -355,11 +371,42 @@ Run directly with tsx:
 npm run dev -- agents list
 ```
 
-## API Documentation
+## ElevenLabs API & SDK Reference
 
-- [ElevenLabs API Reference](https://elevenlabs.io/docs/api-reference)
-- [TypeScript SDK](https://github.com/elevenlabs/elevenlabs-js)
+This CLI is a thin wrapper over the official ElevenLabs TypeScript SDK plus two direct REST calls. Everything lives under the `conversationalAi` namespace of the SDK.
+
+- **SDK:** [`@elevenlabs/elevenlabs-js`](https://github.com/elevenlabs/elevenlabs-js), pinned `^2.34.0` (verified against 2.49.x). The `^` range already pulls the latest 2.x — run `npm update @elevenlabs/elevenlabs-js` to refresh, then `npm run build`.
+- **Client setup:** `new ElevenLabsClient({ apiKey })` (see `src/client.ts`).
+
+### Command → API mapping
+
+| CLI command | SDK method / endpoint | Docs |
+|---|---|---|
+| `agents:list` | `conversationalAi.agents.list()` | [List Agents](https://elevenlabs.io/docs/api-reference/agents/list) |
+| `agents:pull` | `conversationalAi.agents.get(id)` | [Get Agent](https://elevenlabs.io/docs/api-reference/agents/get) |
+| `agents:push` | `conversationalAi.agents.update(id, updates, { branchId })` | [Update Agent](https://elevenlabs.io/docs/api-reference/agents/update) |
+| `tools:list` / `tools:create` / `tools:push` | `conversationalAi.tools.{list,get,create,update}` | [Tools](https://elevenlabs.io/docs/api-reference/tools/list) |
+| `kb:sync` | `conversationalAi.knowledgeBase.documents.createFromText` + RAG index | [Create from Text](https://elevenlabs.io/docs/api-reference/knowledge-base/create-from-text) |
+| `kb:pull` | `GET /v1/convai/knowledge-base/{id}/content` (direct fetch) | [Get Content](https://elevenlabs.io/docs/api-reference/knowledge-base/get-content) |
+| `branches:list` / `create` / `merge` | `conversationalAi.agents.branches.*` | [Branches](https://elevenlabs.io/docs/api-reference/agents/branches/list) |
+| `branches:deploy` | `conversationalAi.agents.deployments.create(id, { deployments })` | [Create Deployment](https://elevenlabs.io/docs/api-reference/agents/deployments/create) |
+| `tests:run` | `conversationalAi.agents.simulateConversation(id, request)` | [Simulate Conversation](https://elevenlabs.io/docs/api-reference/agents/simulate-conversation) |
+
+### Direct REST endpoints used
+
+The SDK does not (yet) cover these, so `src/client.ts` calls them directly with the `xi-api-key` header:
+
+- `GET https://api.elevenlabs.io/v1/convai/knowledge-base/{documentId}/content` — full KB document text (used by `kb:pull`).
+- `POST https://api.elevenlabs.io/v1/convai/knowledge-base/rag-index` — compute the RAG index after a KB update (used by `kb:sync` when RAG is enabled).
+
+### Notes on current API behavior
+
+- **Agent tools are referenced by ID.** Attach tools to an agent via `toolIds` in `agent-config.json`. The agent-level inline `tools` array is [deprecated](https://elevenlabs.io/docs/eleven-agents/customization/tools/agent-tools-deprecation) — never set both.
+- **`forcePreToolSpeech` and `toolCallSoundBehavior` live on the tool object**, not the agent config. `agents:push` only updates the prompt; tool settings are patched per tool via `/v1/convai/tools/{id}`.
+- **Knowledge bases:** upload as file (type `file`), not text, for proper HTML extraction. Use `prompt` mode (RAG disabled) for KBs under ~5,000 tokens; enable RAG only for larger documents and always recompute the index after an update.
+
+Full doc index (URLs + pre-fetched references) is available via the `/elevenlabs-docs` Claude Code skill.
 
 ## License
 
-ISC
+MIT
